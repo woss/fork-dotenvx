@@ -1,10 +1,45 @@
 const Session = require('./../../db/session')
 
 const armorProvider = require('./armor/index')
+const keychainProvider = require('./keychain/index')
 function syncArmorProvider (publicKeyHex) {
   const { createSyncFn } = require('synckit')
   const runProviderSync = createSyncFn(require.resolve('./worker.js'))
   return runProviderSync(require.resolve('./armor/index'), publicKeyHex)
+}
+
+function hasKey (keyring, publicKeyHex) {
+  return keyring && keyring[publicKeyHex]
+}
+
+function composeProviders (providerFns) {
+  return async function provider (publicKeyHex) {
+    for (const providerFn of providerFns) {
+      const keyring = await providerFn(publicKeyHex)
+      if (hasKey(keyring, publicKeyHex)) return keyring
+    }
+
+    return {}
+  }
+}
+
+function composeProvidersSync (providerFns) {
+  return function providerSync (publicKeyHex) {
+    for (const providerFn of providerFns) {
+      const keyring = providerFn(publicKeyHex)
+      if (hasKey(keyring, publicKeyHex)) return keyring
+    }
+
+    return {}
+  }
+}
+
+function armorProviderForOptions (options) {
+  return (publicKeyHex) => armorProvider(publicKeyHex, {
+    onStatus: options.onStatus,
+    token: options.token,
+    command: options.command
+  })
 }
 
 async function providers (options = {}) {
@@ -18,13 +53,12 @@ async function providers (options = {}) {
 
   const sesh = new Session()
   const noArmor = !options.token && await sesh.noArmor()
-  if (noArmor) return null
+  if (noArmor) return keychainProvider
 
-  return (publicKeyHex) => armorProvider(publicKeyHex, {
-    onStatus: options.onStatus,
-    token: options.token,
-    command: options.command
-  })
+  return composeProviders([
+    keychainProvider,
+    armorProviderForOptions(options)
+  ])
 }
 
 providers.sync = function providersSync (options = {}) {
@@ -38,9 +72,12 @@ providers.sync = function providersSync (options = {}) {
 
   const sesh = new Session()
   const noArmor = !options.token && sesh.noArmorSync()
-  if (noArmor) return null
+  if (noArmor) return keychainProvider
 
-  return syncArmorProvider
+  return composeProvidersSync([
+    keychainProvider,
+    syncArmorProvider
+  ])
 }
 
 module.exports = providers
