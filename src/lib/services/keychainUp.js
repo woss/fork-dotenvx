@@ -8,6 +8,14 @@ const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
 const SECURITY_BIN = '/usr/bin/security'
 const SERVICE = 'dotenvx'
 
+function addGenericPassword (publicKey, label, privateKey) {
+  try {
+    execFileSync(SECURITY_BIN, ['add-generic-password', '-U', '-s', SERVICE, '-a', publicKey, '-l', label, '-w', privateKey], { stdio: 'ignore' })
+  } catch {
+    throw new Error('failed to save private key to macOS Keychain')
+  }
+}
+
 class KeychainUp {
   constructor (envFile = '.env', envKeysFile = '.env.keys') {
     this.envFile = envFile
@@ -57,7 +65,7 @@ class KeychainUp {
       }
     }
 
-    execFileSync(SECURITY_BIN, ['add-generic-password', '-U', '-s', SERVICE, '-a', publicKey, '-l', label, '-w', privateKey], { stdio: 'ignore' })
+    addGenericPassword(publicKey, label, privateKey)
     removeEnvKey(privateKeyName, envKeysFile)
 
     return {
