@@ -1385,6 +1385,15 @@ $ dotenvx run --token "$DOTENVX_ARMOR_TOKEN" -- yourcommand
 ```
 
 </details>
+<details><summary>`run --no-keychain`</summary><br>
+
+Turn off macOS Keychain lookups.
+
+```sh
+$ dotenvx run --no-keychain -- yourcommand
+```
+
+</details>
 <details><summary>`run --no-armor`</summary><br>
 
 Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features.
@@ -1394,15 +1403,6 @@ $ dotenvx run --no-armor -- yourcommand
 ```
 
 `--no-vlt` and `--no-ops` are deprecated aliases.
-
-</details>
-<details><summary>`run --no-keychain`</summary><br>
-
-Turn off macOS Keychain lookups.
-
-```sh
-$ dotenvx run --no-keychain -- yourcommand
-```
 
 </details>
 <details><summary>`get KEY`</summary><br>
@@ -1781,6 +1781,16 @@ $ dotenvx encrypt -f .env.production
 ```
 
 </details>
+<details><summary>`encrypt --no-keychain`</summary><br>
+
+Turn off macOS Keychain lookups for encrypt.
+
+```sh
+$ dotenvx encrypt --no-keychain
+◈ encrypted (.env)
+```
+
+</details>
 <details><summary>`encrypt --no-armor`</summary><br>
 
 Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features for encrypt.
@@ -1791,16 +1801,6 @@ $ dotenvx encrypt --no-armor
 ```
 
 `--no-vlt` and `--no-ops` are deprecated aliases.
-
-</details>
-<details><summary>`encrypt --no-keychain`</summary><br>
-
-Turn off macOS Keychain lookups for encrypt.
-
-```sh
-$ dotenvx encrypt --no-keychain
-◈ encrypted (.env)
-```
 
 </details>
 <details><summary>`encrypt -fk`</summary><br>
