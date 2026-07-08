@@ -1,5 +1,5 @@
 const { logger } = require('../../../shared/logger')
-const KeychainUp = require('./../../../lib/services/keychainUp')
+const KeychainPush = require('./../../../lib/services/keychainPush')
 const createSpinner = require('../../../lib/helpers/createSpinner')
 const armoredKeyDisplay = require('../../../lib/helpers/armoredKeyDisplay')
 
@@ -10,7 +10,7 @@ async function push () {
   logger.debug(`options: ${JSON.stringify(options)}`)
 
   try {
-    const { changed, privateKeyName, publicKeyValue } = new KeychainUp(options.envFile, options.envKeysFile).run()
+    const { changed, privateKeyName, publicKeyValue } = new KeychainPush(options.envFile, options.envKeysFile).run()
     const keyDisplay = armoredKeyDisplay(publicKeyValue) || privateKeyName
 
     if (spinner) spinner.stop()

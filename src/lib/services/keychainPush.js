@@ -2,13 +2,12 @@ const { execFileSync } = require('child_process')
 
 const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
-const removeEnvKey = require('../helpers/removeEnvKey')
 const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
 
 const SECURITY_BIN = '/usr/bin/security'
 const SERVICE = 'dotenvx'
 
-class KeychainUp {
+class KeychainPush {
   constructor (envFile = '.env', envKeysFile = '.env.keys') {
     this.envFile = envFile
     this.envKeysFile = envKeysFile
@@ -24,41 +23,24 @@ class KeychainUp {
     } = keynames(envFile)
 
     const publicKey = readEnvKey(publicKeyName, envFile, { strict: true, ignore: ['MISSING_PRIVATE_KEY'] })
+    const privateKey = readEnvKey(privateKeyName, envKeysFile, { strict: true })
     const label = `dotenvx (${armoredKeyDisplay(publicKey)})`
-    let existingPrivateKey
 
     try {
-      existingPrivateKey = execFileSync(SECURITY_BIN, ['find-generic-password', '-s', SERVICE, '-a', publicKey, '-w'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
-    } catch {}
-
-    const privateKey = readEnvKey(privateKeyName, envKeysFile, { strict: !existingPrivateKey })
-
-    if (existingPrivateKey) {
-      if (!privateKey) {
-        return {
-          changed: false,
-          label,
-          privateKeyName,
-          privateKeyValue: existingPrivateKey,
-          publicKeyValue: publicKey
-        }
-      }
+      const existingPrivateKey = execFileSync(SECURITY_BIN, ['find-generic-password', '-s', SERVICE, '-a', publicKey, '-w'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
 
       if (existingPrivateKey === privateKey) {
-        const result = removeEnvKey(privateKeyName, envKeysFile)
-
         return {
-          changed: result.changed,
+          changed: false,
           label,
           privateKeyName,
           privateKeyValue: privateKey,
           publicKeyValue: publicKey
         }
       }
-    }
+    } catch {}
 
     execFileSync(SECURITY_BIN, ['add-generic-password', '-U', '-s', SERVICE, '-a', publicKey, '-l', label, '-w', privateKey], { stdio: 'ignore' })
-    removeEnvKey(privateKeyName, envKeysFile)
 
     return {
       changed: true,
@@ -70,4 +52,4 @@ class KeychainUp {
   }
 }
 
-module.exports = KeychainUp
+module.exports = KeychainPush
