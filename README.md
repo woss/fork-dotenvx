@@ -1402,8 +1402,6 @@ Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features.
 $ dotenvx run --no-armor -- yourcommand
 ```
 
-`--no-vlt` and `--no-ops` are deprecated aliases.
-
 </details>
 <details><summary>`get KEY`</summary><br>
 
@@ -1799,8 +1797,6 @@ Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features for encrypt.
 $ dotenvx encrypt --no-armor
 ◈ encrypted (.env)
 ```
-
-`--no-vlt` and `--no-ops` are deprecated aliases.
 
 </details>
 <details><summary>`encrypt -fk`</summary><br>
@@ -2736,8 +2732,6 @@ Turn off [Dotenvx Armor ⛨](https://dotenvx.com/armor) features.
 // index.js
 require('@dotenvx/dotenvx').config({noArmor: true})
 ```
-
-`noVlt` and `noOps` are deprecated aliases.
 
 </details>
 <details><summary>`parse(src)`</summary><br>
