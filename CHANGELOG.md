@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.2.1...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.2.2...main)
+
+## [2.2.2](https://github.com/dotenvx/dotenvx/compare/v2.2.1...v2.2.2) (2026-07-08)
+
+### Changed
+
+* Move `login` and `logout` under armor ([#874](https://github.com/dotenvx/dotenvx/pull/874))
 
 ## [2.2.1](https://github.com/dotenvx/dotenvx/compare/v2.2.0...v2.2.1) (2026-07-08)
 
