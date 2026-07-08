@@ -2870,18 +2870,6 @@ This is known as *Decryption at Access* and is written about in [the whitepaper]
 
 &nbsp;
 
-## Whitepaper
-
-> **Dotenvx: Reducing Secrets Risk with Cryptographic Separation**
->
-> Abstract. An ideal secrets solution would not only centralize secrets but also contain the fallout of a breach. While secrets managers offer centralized storage and distribution, their design creates a large blast radius, risking exposure of thousands or even millions of secrets. We propose a solution that reduces the blast radius by splitting secrets management into two distinct components: an encrypted secrets file and a separate decryption key.
->
-> ...
->
-> [Read the whitepaper](https://dotenvx.com/dotenvx.pdf)
-
-&nbsp;
-
 ## Guides
 
 > Go deeper with `dotenvx` – detailed framework and platform guides.
