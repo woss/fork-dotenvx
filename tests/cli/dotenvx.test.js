@@ -89,6 +89,29 @@ t.test('logout resolves through native action', (ct) => {
   ct.end()
 })
 
+t.test('keypair collects multiple env files and env keys files', (ct) => {
+  const executeDynamicStub = sinon.stub()
+  const keypairStub = sinon.stub()
+  const processExitStub = sinon.stub(process, 'exit')
+  const originalArgv = process.argv
+
+  process.argv = ['node', 'dotenvx', 'keypair', '-f', '.env.local', '-fk', '.env.local.keys', '-f', '.env.production', '-fk', '.env.production.keys']
+
+  proxyquire('../../src/cli/dotenvx', {
+    './../lib/helpers/executeDynamic': executeDynamicStub,
+    './actions/keypair': keypairStub
+  })
+
+  ct.equal(processExitStub.callCount, 0, 'process.exit is not called')
+  ct.equal(executeDynamicStub.callCount, 0, 'executeDynamic is not called')
+  ct.equal(keypairStub.callCount, 1, 'keypair action is called')
+  ct.same(keypairStub.firstCall.thisValue.opts().envFile, ['.env.local', '.env.production'], 'env files are collected')
+  ct.same(keypairStub.firstCall.thisValue.opts().envKeysFile, ['.env.local.keys', '.env.production.keys'], 'env keys files are collected')
+
+  process.argv = originalArgv
+  ct.end()
+})
+
 t.test('armor resolves through native command', (ct) => {
   const executeDynamicStub = sinon.stub()
   const configureArmorCommandStub = sinon.stub().callsFake((armorCommand) => {

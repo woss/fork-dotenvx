@@ -46,6 +46,47 @@ t.test('keypair forwards envKeysFilepath to primitive keyring',
     ct.end()
   })
 
+t.test('keypair forwards multiple envKeysFile values to primitive keyring',
+  async ct => {
+    const keyring = sinon.stub().resolves({
+      'public-key': 'private-key'
+    })
+    const keyringSync = sinon.stub().returns({
+      'public-key': 'private-key'
+    })
+    const providers = sinon.stub().resolves(null)
+    providers.sync = sinon.stub().returns(null)
+    const keypair = proxyquire('../../../src/lib/resolvers/keypair', {
+      './../conventions/keynames': () => ({ publicKeyName: 'DOTENV_PUBLIC_KEY', privateKeyName: 'DOTENV_PRIVATE_KEY' }),
+      './../helpers/fsx': {
+        readFileX: async () => 'DOTENV_PUBLIC_KEY="public-key"',
+        readFileXSync: () => 'DOTENV_PUBLIC_KEY="public-key"'
+      },
+      './../providers': providers,
+      '@dotenvx/primitives': {
+        publickeys: () => ['public-key'],
+        keyring,
+        keyringSync
+      }
+    })
+
+    const fks = ['.env.local.keys', '.env.production.keys']
+    const out = await keypair({
+      envFile: '.env',
+      envKeysFile: fks
+    })
+    const outSync = keypair.sync({
+      envFile: '.env',
+      envKeysFile: fks
+    })
+
+    ct.same(out, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
+    ct.same(outSync, { DOTENV_PUBLIC_KEY: 'public-key', DOTENV_PRIVATE_KEY: 'private-key' })
+    ct.same(keyring.firstCall.args[0].fk, fks)
+    ct.same(keyringSync.firstCall.args[0].fk, fks)
+    ct.end()
+  })
+
 t.test('keypair passes no provider when noArmor is true',
   async ct => {
     const keyring = sinon.stub().callsFake(async ({ ring }) => ring)
