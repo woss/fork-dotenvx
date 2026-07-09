@@ -21,7 +21,7 @@ async function set (key, value) {
     settingSymbol = '◇'
   }
 
-  if (typeof value === 'undefined') {
+  if (value === undefined || value === null) {
     if (!process.stdin.isTTY) {
       catchAndLog(new Errors({ key }).missingValue())
       process.exit(1)
@@ -45,12 +45,6 @@ async function set (key, value) {
 
       throw error
     }
-  }
-
-  if (value === '') {
-    catchAndLog(new Errors({ key }).missingValue())
-    process.exit(1)
-    return
   }
 
   const spinner = await createSpinner({ ...options, text: settingMessage })
