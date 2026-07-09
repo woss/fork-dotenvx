@@ -32,6 +32,7 @@ async function printSize (fileName) {
 
 async function main () {
   const start = Date.now()
+  const minify = process.argv.includes('--minify')
   // clean build folder
   await emptyDir(outputDir)
 
@@ -43,7 +44,7 @@ async function main () {
     bundle: true,
     platform: 'node',
     target: 'node18',
-    sourcemap: true,
+    sourcemap: !minify,
     outfile,
     // suppress direct-eval warning
     logOverride: {
@@ -56,7 +57,7 @@ async function main () {
   console.log(`Build took ${Date.now() - start}ms`)
   await printSize(outfile)
 
-  if (process.argv.includes('--minify')) {
+  if (minify) {
     // minify the file
     await esbuild.build({
       ...config,
@@ -79,10 +80,12 @@ async function main () {
   }
 
   pkgJson.bin = 'index.js'
-  pkgJson.pkg = {
-    assets: [
-      '*.map'
-    ]
+  if (!minify) {
+    pkgJson.pkg = {
+      assets: [
+        '*.map'
+      ]
+    }
   }
 
   await writeFile(
