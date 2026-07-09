@@ -783,7 +783,9 @@ $ dotenvx encrypt
 
 > A `DOTENV_PUBLIC_KEY` (encryption key) and a `DOTENV_PRIVATE_KEY` (decryption key) are generated using the same public-key cryptography as [Bitcoin](https://en.bitcoin.it/wiki/Secp256k1).
 
-### Protect `.env.keys` from agents
+More examples
+
+<details><summary>protect from agents</summary><br>
 
 After encryption, `DOTENV_PUBLIC_KEY` lives in your encrypted `.env` file. This means agents and automation can keep running `dotenvx set` and `dotenvx encrypt` without reading `.env.keys`.
 
@@ -799,8 +801,7 @@ $ dotenvx encrypt
 
 Keep `.env.keys` unreadable by agents, while still letting them safely update encrypted values.
 
-More examples
-
+</details>
 <details><summary>`.env`</summary><br>
 
 ```sh
