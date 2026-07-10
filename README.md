@@ -1109,6 +1109,17 @@ $ dotenvx get GOODBYE
 ```
 
 </details>
+<details><summary>`run -f <directory>`</summary><br>
+
+Run a command using the `.env` file in a directory. This is useful with monorepos.
+
+```sh
+$ dotenvx run -f ../.. -- node index.js
+[dotenvx@1.X.X] injecting env (1) from ../../.env
+Hello World
+```
+
+</details>
 <details><summary>`run` - multiple `-f` flags</summary><br>
 
 Compose multiple `.env` files for environment variables loading, as you need.
@@ -1384,6 +1395,17 @@ Hello development local
 (more conventions available upon request)
 
 </details>
+<details><summary>`run -f <directory> --convention=nextjs`</summary><br>
+
+Run a command using Next.js' convention from a directory. This is useful with monorepos.
+
+```sh
+$ dotenvx run -f ../.. --convention=nextjs -- node index.js
+[dotenvx@1.X.X] injecting env (1) from ../../.env.development.local, ../../.env.local, ../../.env.development, ../../.env
+Hello development local
+```
+
+</details>
 <details><summary>`run --convention=flow`</summary><br>
 
 Load envs using [dotenv-flow's convention](https://www.npmjs.com/package/dotenv-flow). Set `--convention` to `flow`:
@@ -1491,6 +1513,16 @@ production
 ```
 
 </details>
+<details><summary>`get KEY -f <directory>`</summary><br>
+
+Return a single environment variable's value from the `.env` file in a directory. This is useful with monorepos.
+
+```sh
+$ dotenvx get HELLO -f ../..
+World
+```
+
+</details>
 <details><summary>`get KEY -fk`</summary><br>
 
 Specify path to `.env.keys`. This is useful with monorepos.
@@ -1558,6 +1590,16 @@ You can also set `DOTENV_CONFIG_CONVENTION=nextjs`.
 
 ```sh
 $ DOTENV_CONFIG_CONVENTION=nextjs dotenvx get HELLO
+development local
+```
+
+</details>
+<details><summary>`get KEY -f <directory> --convention=nextjs`</summary><br>
+
+Return a single environment variable's value using Next.js' convention from a directory. This is useful with monorepos.
+
+```sh
+$ dotenvx get HELLO -f ../.. --convention=nextjs
 development local
 ```
 

@@ -7,6 +7,51 @@ const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
 const getResolver = require('./../../lib/resolvers/get')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
+const resolveDirectoryFilepath = require('../../lib/helpers/resolveDirectoryFilepath')
+
+function buildEnvs (envs, convention) {
+  const resolvedEnvs = []
+  let hasDirectory = false
+
+  for (const env of envs) {
+    if (env.type !== 'envFile') {
+      resolvedEnvs.push(env)
+      continue
+    }
+
+    const envFilepath = resolveDirectoryFilepath(env.value, '.env')
+    if (envFilepath === env.value) {
+      resolvedEnvs.push(env)
+      continue
+    }
+
+    hasDirectory = true
+    if (convention) {
+      for (const conventionEnv of conventions(convention)) {
+        resolvedEnvs.push({
+          ...conventionEnv,
+          value: resolveDirectoryFilepath(env.value, conventionEnv.value)
+        })
+      }
+    } else {
+      resolvedEnvs.push({ ...env, value: envFilepath })
+    }
+  }
+
+  if (convention && !hasDirectory) {
+    return conventions(convention).concat(resolvedEnvs)
+  }
+
+  return resolvedEnvs
+}
+
+function resolveEnvKeysFile (envKeysFile) {
+  if (Array.isArray(envKeysFile)) {
+    return envKeysFile.map(filepath => resolveDirectoryFilepath(filepath, '.env.keys'))
+  }
+
+  return envKeysFile && resolveDirectoryFilepath(envKeysFile, '.env.keys')
+}
 
 async function get (key) {
   const options = normalizeDotenvConfigConvention(this.opts())
@@ -21,13 +66,7 @@ async function get (key) {
   const ignore = options.ignore || []
   let errorCount = 0
 
-  let envs = []
-  // handle shorthand conventions - like --convention=nextjs
-  if (options.convention) {
-    envs = conventions(options.convention).concat(this.envs)
-  } else {
-    envs = this.envs
-  }
+  const envs = buildEnvs(this.envs, options.convention)
 
   try {
     const sesh = new Session()
@@ -38,7 +77,7 @@ async function get (key) {
       envs,
       overload: options.overload,
       all: options.all,
-      envKeysFile: options.envKeysFile,
+      envKeysFile: resolveEnvKeysFile(options.envKeysFile),
       noArmor,
       noKeychain,
       onStatus: (text) => {
