@@ -17,8 +17,15 @@ const envs = []
 function collectEnvs (type) {
   return function (value, previous) {
     envs.push({ type, value })
-    return previous.concat([value])
+    return (previous || []).concat([value])
   }
+}
+
+function collectEnvKeys (value, previous) {
+  if (previous === undefined) return value
+  if (Array.isArray(previous)) return previous.concat([value])
+
+  return [previous, value]
 }
 
 // global log levels
@@ -56,7 +63,7 @@ program.command('run')
   .addHelpText('after', examples.run)
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
+  .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
   .option('-o, --overload', 'override existing env variables (by default, existing env vars take precedence over .env files)')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
@@ -76,7 +83,7 @@ program.command('get')
   .argument('[KEY]', 'environment variable name')
   .option('-e, --env <strings...>', 'environment variable(s) set as string (example: "HELLO=World")', collectEnvs('env'), [])
   .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
+  .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
   .option('-o, --overload', 'override existing env variables (by default, existing env vars take precedence over .env files)')
   .option('--strict', 'process.exit(1) on any errors', false)
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
@@ -133,7 +140,7 @@ program.command('encrypt')
 program.command('decrypt')
   .description('decrypt .env file(s)')
   .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'), [])
-  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
+  .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
   .option('-k, --key <keys...>', 'keys(s) to decrypt (default: all keys in file)')
   .option('-ek, --exclude-key <excludeKeys...>', 'keys(s) to exclude from decryption (default: none)')
   .option('--no-armor', 'disable Dotenvx Armor features')
@@ -149,8 +156,8 @@ program.command('keypair')
   .usage('[KEY] [options]')
   .description('print public/private keys for .env file(s)')
   .argument('[KEY]', 'environment variable key name')
-  .option('-f, --env-file <path>', 'path(s) to your env file(s)')
-  .option('-fk, --env-keys-file <path>', 'path to your .env.keys file (default: same path as your env file)')
+  .option('-f, --env-file <path>', 'path(s) to your env file(s)', collectEnvs('envFile'))
+  .option('-fk, --env-keys-file <path>', 'path(s) to your .env.keys file(s) (default: same path as your env file)', collectEnvKeys)
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
   .option('-pp, --pretty-print', 'pretty print output')
