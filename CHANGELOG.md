@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.3.4...main)
 
+### Added
+
+* Support multiple `-fk` flags for select commands ([#880](https://github.com/dotenvx/dotenvx/pull/880))
+
 ## [2.3.4](https://github.com/dotenvx/dotenvx/compare/v2.3.3...v2.3.4) (2026-07-09)
 
 ### Removed
