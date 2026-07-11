@@ -130,16 +130,20 @@ jobs:
           npm init -y
           npm install "..\$TARBALL"
 
-          $PUBLIC_KEY = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
-          $PRIVATE_KEY = "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+          "HELLO=WindowsNative" | Out-File -FilePath .env -Encoding utf8NoBOM
+          .\node_modules\.bin\dotenvx.ps1 encrypt --no-armor
+          if ($LASTEXITCODE -ne 0) {
+            Write-Output "dotenvx encrypt failed with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+          }
+
+          $PUBLIC_KEY = ((Get-Content .env | Select-String '^DOTENV_PUBLIC_KEY=').Line -split '=', 2)[1].Trim('"')
+          $PRIVATE_KEY = ((Get-Content .env.keys | Select-String '^DOTENV_PRIVATE_KEY=').Line -split '=', 2)[1].Trim('"')
           $TARGET = "dotenvx:$PUBLIC_KEY"
 
           & cmdkey.exe "/delete:$TARGET" | Out-Null
 
           try {
-            "DOTENV_PUBLIC_KEY=`"$PUBLIC_KEY`"" | Out-File -FilePath .env -Encoding utf8NoBOM
-            "DOTENV_PRIVATE_KEY=`"$PRIVATE_KEY`"" | Out-File -FilePath .env.keys -Encoding utf8NoBOM
-
             $FIRST_OUTPUT = .\node_modules\.bin\dotenvx.ps1 native up
             $FIRST_EXIT_CODE = $LASTEXITCODE
             $FIRST_OUTPUT_TEXT = $FIRST_OUTPUT -join [Environment]::NewLine
@@ -167,6 +171,21 @@ jobs:
             }
             if ($SECOND_OUTPUT_TEXT -notmatch "no change") {
               Write-Output "expected second native up to read the stored key, got '$SECOND_OUTPUT_TEXT'"
+              exit 1
+            }
+
+            $ORIGINAL_CI = $env:CI
+            $env:CI = $null
+            $GET_OUTPUT = .\node_modules\.bin\dotenvx.ps1 get HELLO
+            $GET_EXIT_CODE = $LASTEXITCODE
+            $env:CI = $ORIGINAL_CI
+            Write-Output $GET_OUTPUT
+            if ($GET_EXIT_CODE -ne 0) {
+              Write-Output "dotenvx get could not use the Windows native provider"
+              exit $GET_EXIT_CODE
+            }
+            if ($GET_OUTPUT -ne "WindowsNative") {
+              Write-Output "expected WindowsNative from the native provider, got '$GET_OUTPUT'"
               exit 1
             }
 
