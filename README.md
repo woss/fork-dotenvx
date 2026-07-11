@@ -2648,7 +2648,7 @@ Commands:
  
 Professional Security: 
   lock                     ⊡ lock private keys with a local passphrase
-  native                   ⌥ move private keys into your OS secret store (macOS, Linux, and Windows supported)
+  native                   ⌥ move private keys into your OS secret store
   armor                    ⛨ move private keys into Dotenvx Armor [www.dotenvx.com/armor]
 ```
 

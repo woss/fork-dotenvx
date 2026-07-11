@@ -1,6 +1,6 @@
 function configureNativeCommand (native) {
   native
-    .description('move private keys into your OS secret store (macOS, Linux, and Windows supported)')
+    .description('move private keys into your OS secret store')
     .action(function () {
       this.help()
     })
