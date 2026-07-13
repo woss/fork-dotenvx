@@ -56,21 +56,24 @@ async function get (key) {
     }
 
     if (spinner) spinner.stop()
+    if (options.mask !== undefined) {
+      const showChar = options.mask === true ? 6 : options.mask
+      for (const key of Object.keys(parsed)) {
+        parsed[key] = mask(parsed[key], showChar)
+      }
+    }
+
     if (key) {
       const single = parsed[key]
       if (single === undefined) {
         console.log('')
       } else {
-        console.log(options.mask ? mask(single) : single)
+        console.log(single)
       }
     } else {
-      const output = options.mask
-        ? Object.fromEntries(Object.entries(parsed).map(([key, value]) => [key, mask(value)]))
-        : parsed
-
       if (options.format === 'eval') {
         let inline = ''
-        for (const [key, value] of Object.entries(output)) {
+        for (const [key, value] of Object.entries(parsed)) {
           inline += `${key}=${escape(value)}\n`
         }
         inline = inline.trim()
@@ -78,7 +81,7 @@ async function get (key) {
         console.log(inline)
       } else if (options.format === 'shell') {
         let inline = ''
-        for (const [key, value] of Object.entries(output)) {
+        for (const [key, value] of Object.entries(parsed)) {
           inline += `${key}=${value} `
         }
         inline = inline.trim()
@@ -86,7 +89,7 @@ async function get (key) {
         console.log(inline)
       } else if (options.format === 'colon') {
         let inline = ''
-        for (const [key, value] of Object.entries(output)) {
+        for (const [key, value] of Object.entries(parsed)) {
           inline += `${key}:${value} `
         }
         inline = inline.trim()
@@ -98,7 +101,7 @@ async function get (key) {
           space = 2
         }
 
-        console.log(JSON.stringify(output, null, space))
+        console.log(JSON.stringify(parsed, null, space))
       }
     }
 

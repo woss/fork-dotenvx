@@ -3,8 +3,16 @@ function mask (str, showChar = 6) {
     return ''
   }
 
-  const visiblePart = str.slice(0, showChar)
-  const maskedPart = '*'.repeat(Math.max(0, str.length - showChar))
+  const number = Number(showChar)
+  showChar = Number.isFinite(number) ? Math.abs(Math.trunc(number)) : 0
+
+  const visibleChars = str.length === 1
+    ? 0
+    : str.length <= showChar
+      ? Math.ceil(str.length / 2)
+      : showChar
+  const visiblePart = str.slice(0, visibleChars)
+  const maskedPart = '*'.repeat(str.length - visibleChars)
 
   return visiblePart + maskedPart
 }
