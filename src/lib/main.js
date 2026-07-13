@@ -25,6 +25,8 @@ const decryptKeyValue = require('./helpers/cryptography/decryptKeyValue')
 const Errors = require('./helpers/errors')
 const normalizeDotenvConfigQuiet = require('./helpers/normalizeDotenvConfigQuiet')
 const normalizeDotenvConfigConvention = require('./helpers/normalizeDotenvConfigConvention')
+const mask = require('./helpers/mask')
+const maskProcessedEnvs = require('./helpers/maskProcessedEnvs')
 
 function uniqueInjectedKeys (processedEnvs) {
   const result = new Set()
@@ -87,6 +89,11 @@ const config = function (options = {}) {
       noSpinner: options.noSpinner,
       token: options.token
     })
+
+    if (options.mask !== undefined) {
+      const showChar = options.mask === true ? 6 : options.mask
+      maskProcessedEnvs(processedEnvs, processEnv, showChar)
+    }
 
     let lastError
     /** @type {Record<string, string>} */
@@ -325,6 +332,13 @@ const get = async function (key, options = {}) {
     noArmor,
     noKeychain
   })
+
+  if (options.mask !== undefined) {
+    const showChar = options.mask === true ? 6 : options.mask
+    for (const key of Object.keys(parsed)) {
+      parsed[key] = mask(parsed[key], showChar)
+    }
+  }
 
   for (const error of errors || []) {
     if (ignore.includes(error.code)) {
