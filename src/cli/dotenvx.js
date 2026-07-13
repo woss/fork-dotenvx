@@ -69,6 +69,7 @@ program.command('run')
   .option('--convention <name>', 'load a .env convention (available conventions: [\'nextjs\', \'flow\'])')
   .option('--ignore <errorCodes...>', 'error code(s) to ignore (example: --ignore=MISSING_ENV_FILE)')
   .option('--token <token>', 'set Armor ⛨ token')
+  .option('--mask [characters]', 'inject masked values, optionally setting visible characters')
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
   .action(function (...args) {
@@ -147,6 +148,7 @@ program.command('decrypt')
   .option('--no-armor', 'disable Dotenvx Armor features')
   .option('--no-native', 'disable OS secret store features')
   .option('--stdout', 'send to stdout')
+  .option('--mask [characters]', 'mask stdout values, optionally setting visible characters')
   .action(function (...args) {
     this.envs = envs
     return require('./actions/decrypt').apply(this, args)

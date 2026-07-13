@@ -4,8 +4,20 @@ const { logger } = require('./../../shared/logger')
 const catchAndLog = require('../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 const Session = require('../../db/session')
+const { scan, upsert } = require('@dotenvx/primitives')
 
 const decryptTransform = require('./../../lib/transforms/decrypt')
+const mask = require('../../lib/helpers/mask')
+
+function maskEnvSrc (envSrc, showChar) {
+  const { parsed } = scan(envSrc)
+
+  for (const [key, values] of Object.entries(parsed)) {
+    envSrc = upsert(envSrc, key, values.map(value => mask(value, showChar)))
+  }
+
+  return envSrc
+}
 
 async function decrypt () {
   const options = this.opts()
@@ -44,7 +56,11 @@ async function decrypt () {
         errorCount += 1
         logger.error(processedEnv.error.messageWithHelp || processedEnv.error.message)
       } else {
-        console.log(processedEnv.envSrc)
+        const showChar = options.mask === true ? 6 : options.mask
+        const envSrc = options.mask === undefined
+          ? processedEnv.envSrc
+          : maskEnvSrc(processedEnv.envSrc, showChar)
+        console.log(envSrc)
       }
     }
 
