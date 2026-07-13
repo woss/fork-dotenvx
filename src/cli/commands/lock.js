@@ -1,4 +1,10 @@
 function configureLockCommand (lock) {
+  lock.hook('preAction', async () => {
+    const Session = require('./../../db/session')
+    const sesh = new Session()
+    await sesh.notifyUpdate()
+  })
+
   lock
     .description('lock private keys with a local passphrase')
     .action(function () {

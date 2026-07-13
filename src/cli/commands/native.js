@@ -1,4 +1,10 @@
 function configureNativeCommand (native) {
+  native.hook('preAction', async () => {
+    const Session = require('./../../db/session')
+    const sesh = new Session()
+    await sesh.notifyUpdate()
+  })
+
   native
     .description('move private keys into your OS secret store')
     .action(function () {
