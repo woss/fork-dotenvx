@@ -8,6 +8,7 @@ const getResolver = require('./../../lib/resolvers/get')
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
+const mask = require('../../lib/helpers/mask')
 
 async function get (key) {
   const options = normalizeDotenvConfigConvention(this.opts())
@@ -55,6 +56,17 @@ async function get (key) {
     }
 
     if (spinner) spinner.stop()
+    if (options.mask !== undefined) {
+      let showChar = options.mask
+      if (options.mask === true) {
+        showChar = 6
+      }
+
+      for (const key of Object.keys(parsed)) {
+        parsed[key] = mask(parsed[key], showChar)
+      }
+    }
+
     if (key) {
       const single = parsed[key]
       if (single === undefined) {

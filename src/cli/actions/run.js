@@ -10,6 +10,9 @@ const normalizeDotenvConfigQuiet = require('../../lib/helpers/normalizeDotenvCon
 const normalizeDotenvConfigConvention = require('../../lib/helpers/normalizeDotenvConfigConvention')
 const buildCommandEnvs = require('../../lib/helpers/buildCommandEnvs')
 const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
+const mask = require('../../lib/helpers/mask')
+const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
+const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 
 const { determine } = require('./../../lib/helpers/envResolution')
 
@@ -48,6 +51,12 @@ function uniqueInjectedKeys (processedEnvs) {
 
 async function run () {
   const options = normalizeDotenvConfigConvention(normalizeDotenvConfigQuiet(this.opts()))
+  const maskEnabled = options.mask !== undefined
+  let showChar = options.mask
+  if (options.mask === true) {
+    showChar = 6
+  }
+  let commandEnv = process.env
 
   let commandArgs = this.args
   if (commandArgs.length < 1) {
@@ -56,7 +65,16 @@ async function run () {
 
   const spinner = await createSpinner({ ...options, text: 'injecting' })
 
-  logger.debug(`options: ${JSON.stringify(options)}`)
+  let debugOptions = options
+  if (maskEnabled) {
+    let token = options.token
+    if (options.token) {
+      token = mask(options.token, showChar)
+    }
+
+    debugOptions = { ...options, env: (options.env || []).map(envSrc => maskEnvSrc(envSrc, showChar)), token }
+  }
+  logger.debug(`options: ${JSON.stringify(debugOptions)}`)
   logger.debug(`process command [${commandArgs.join(' ')}]`)
 
   const ignore = options.ignore || []
@@ -103,13 +121,22 @@ async function run () {
       }
     })
 
+    if (maskEnabled) {
+      commandEnv = { ...process.env }
+      maskProcessedEnvs(processedEnvs, commandEnv, showChar)
+    }
+
     for (const processedEnv of processedEnvs) {
       if (processedEnv.type === 'envFile') {
         logger.verbose(`loading env from ${processedEnv.filepath} (${path.resolve(processedEnv.filepath)})`)
       }
 
       if (processedEnv.type === 'env') {
-        logger.verbose(`loading env from string (${processedEnv.string})`)
+        let envString = processedEnv.string
+        if (maskEnabled) {
+          envString = maskEnvSrc(processedEnv.string, showChar)
+        }
+        logger.verbose(`loading env from string (${envString})`)
       }
 
       for (const error of processedEnv.errors || []) {
@@ -161,7 +188,7 @@ async function run () {
     process.exit(1)
   }
 
-  await executeCommand(commandArgs, process.env)
+  await executeCommand(commandArgs, commandEnv)
 }
 
 module.exports = run

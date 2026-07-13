@@ -115,6 +115,14 @@ export interface DotenvConfigOptions {
   processEnv?: DotenvPopulateInput;
 
   /**
+   * Mask resolved values, optionally setting the number of visible characters.
+   * @default false
+   * @example require('@dotenvx/dotenvx').config({ mask: true })
+   * @example require('@dotenvx/dotenvx').config({ mask: 0 })
+   */
+  mask?: boolean | number;
+
+  /**
    * Customize the path to your .env.keys file. This is useful with monorepos.
    * @default []
    * @example require('@dotenvx/dotenvx').config({ envKeysFile: '../../.env.keys'} })
@@ -309,6 +317,14 @@ export function set(
 ): Promise<SetOutput>;
 
 export interface GetOptions {
+  /**
+   * Mask returned values, optionally setting the number of visible characters.
+   * @default false
+   * @example require('@dotenvx/dotenvx').get('KEY', { mask: true })
+   * @example require('@dotenvx/dotenvx').get('KEY', { mask: 0 })
+   */
+  mask?: boolean | number;
+
   /**
    * Suppress specific errors like MISSING_ENV_FILE. The error keys can be found
    * in src/lib/helpers/errors.js
