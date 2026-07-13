@@ -4,29 +4,12 @@ const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const removeEnvKey = require('../helpers/removeEnvKey')
 const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
+const nativeProvider = require('../providers/native')
 const windowsCredentialManager = require('../helpers/windowsCredentialManager')
 const linuxSecretService = require('../helpers/linuxSecretService')
 
 const SECURITY_BIN = '/usr/bin/security'
 const SERVICE = 'dotenvx'
-
-function addGenericPassword (publicKey, label, privateKey) {
-  if (process.platform === 'win32') {
-    windowsCredentialManager.addGenericPassword(publicKey, privateKey)
-    return
-  }
-
-  if (process.platform === 'linux') {
-    linuxSecretService.addGenericPassword(publicKey, label, privateKey)
-    return
-  }
-
-  try {
-    execFileSync(SECURITY_BIN, ['add-generic-password', '-U', '-s', SERVICE, '-a', publicKey, '-l', label, '-w', privateKey], { stdio: 'ignore' })
-  } catch {
-    throw new Error('failed to save private key to macOS Keychain')
-  }
-}
 
 function findGenericPassword (publicKey) {
   if (process.platform === 'win32') {
@@ -89,7 +72,7 @@ class KeychainUp {
       }
     }
 
-    addGenericPassword(publicKey, label, privateKey)
+    nativeProvider.set(publicKey, privateKey, label)
     removeEnvKey(privateKeyName, envKeysFile)
 
     return {

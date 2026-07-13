@@ -10,6 +10,24 @@ function findMacosPrivateKey (publicKeyHex) {
   return execFileSync(SECURITY_BIN, ['find-generic-password', '-s', SERVICE, '-a', publicKeyHex, '-w'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
 }
 
+function set (key, value, label) {
+  if (process.platform === 'win32') {
+    windowsCredentialManager.addGenericPassword(key, value)
+    return
+  }
+
+  if (process.platform === 'linux') {
+    linuxSecretService.addGenericPassword(key, label, value)
+    return
+  }
+
+  try {
+    execFileSync(SECURITY_BIN, ['add-generic-password', '-U', '-s', SERVICE, '-a', key, '-l', label, '-w', value], { stdio: 'ignore' })
+  } catch {
+    throw new Error('failed to save private key to macOS Keychain')
+  }
+}
+
 function index (publicKeyHex) {
   if (!['darwin', 'linux', 'win32'].includes(process.platform)) return {}
 
@@ -30,5 +48,7 @@ function index (publicKeyHex) {
     return {}
   }
 }
+
+index.set = set
 
 module.exports = index

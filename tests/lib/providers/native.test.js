@@ -75,3 +75,42 @@ t.test('native provider reads Linux Secret Service on linux', ct => {
   ct.same(findGenericPassword.firstCall.args, ['public-key'])
   ct.end()
 })
+
+t.test('native provider writes macOS Keychain on darwin', ct => {
+  const execFileSync = sinon.stub()
+  const provider = proxyquire('../../../src/lib/providers/native', {
+    child_process: { execFileSync }
+  })
+
+  setPlatform('darwin')
+  provider.set('public-key', 'private-key', 'dotenvx (PUB LIC)')
+
+  ct.same(execFileSync.firstCall.args, ['/usr/bin/security', ['add-generic-password', '-U', '-s', 'dotenvx', '-a', 'public-key', '-l', 'dotenvx (PUB LIC)', '-w', 'private-key'], { stdio: 'ignore' }])
+  ct.end()
+})
+
+t.test('native provider writes Windows Credential Manager on win32', ct => {
+  const addGenericPassword = sinon.stub()
+  const provider = proxyquire('../../../src/lib/providers/native', {
+    '../../helpers/windowsCredentialManager': { addGenericPassword }
+  })
+
+  setPlatform('win32')
+  provider.set('public-key', 'private-key', 'dotenvx (PUB LIC)')
+
+  ct.same(addGenericPassword.firstCall.args, ['public-key', 'private-key'])
+  ct.end()
+})
+
+t.test('native provider writes Linux Secret Service on linux', ct => {
+  const addGenericPassword = sinon.stub()
+  const provider = proxyquire('../../../src/lib/providers/native', {
+    '../../helpers/linuxSecretService': { addGenericPassword }
+  })
+
+  setPlatform('linux')
+  provider.set('public-key', 'private-key', 'dotenvx (PUB LIC)')
+
+  ct.same(addGenericPassword.firstCall.args, ['public-key', 'dotenvx (PUB LIC)', 'private-key'])
+  ct.end()
+})
