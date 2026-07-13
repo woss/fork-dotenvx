@@ -14,7 +14,7 @@ t.test('writes a secret through secret-tool with the private key on stdin', t =>
     child_process: { execFileSync }
   })
 
-  secretService.addGenericPassword('public-key', 'dotenvx (PUB LIC)', 'private-key-that-must-not-be-an-argument')
+  secretService.set('public-key', 'private-key-that-must-not-be-an-argument', 'dotenvx (PUB LIC)')
 
   t.same(execFileSync.firstCall.args, ['secret-tool', [
     'store',
@@ -36,7 +36,7 @@ t.test('reads a secret through secret-tool', t => {
     child_process: { execFileSync }
   })
 
-  t.equal(secretService.findGenericPassword('public-key'), 'private-key')
+  t.equal(secretService.get('public-key'), 'private-key')
   t.same(execFileSync.firstCall.args, ['secret-tool', [
     'lookup',
     'service', 'dotenvx',
@@ -54,7 +54,7 @@ t.test('deletes a secret through secret-tool', t => {
     child_process: { execFileSync }
   })
 
-  secretService.deleteGenericPassword('public-key')
+  secretService.delete('public-key')
 
   t.same(execFileSync.firstCall.args, ['secret-tool', [
     'clear',
@@ -73,7 +73,7 @@ t.test('sanitizes failed secret-tool writes', t => {
     child_process: { execFileSync }
   })
 
-  const error = t.throws(() => secretService.addGenericPassword('public-key', 'label', privateKey), /failed to save private key to Linux Secret Service/)
+  const error = t.throws(() => secretService.set('public-key', privateKey, 'label'), /failed to save private key to Linux Secret Service/)
 
   t.notMatch(error.message, privateKey)
   t.end()

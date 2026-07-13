@@ -7,7 +7,7 @@ function attributes (publicKey) {
   return ['service', SERVICE, 'public-key', publicKey]
 }
 
-function findGenericPassword (publicKey) {
+function get (publicKey) {
   try {
     return execFileSync(SECRET_TOOL_BIN, ['lookup', ...attributes(publicKey)], {
       encoding: 'utf8',
@@ -18,7 +18,7 @@ function findGenericPassword (publicKey) {
   }
 }
 
-function addGenericPassword (publicKey, label, privateKey) {
+function set (publicKey, privateKey, label) {
   try {
     execFileSync(SECRET_TOOL_BIN, ['store', `--label=${label}`, ...attributes(publicKey)], {
       input: privateKey,
@@ -30,14 +30,16 @@ function addGenericPassword (publicKey, label, privateKey) {
   }
 }
 
-function deleteGenericPassword (publicKey) {
-  try {
-    execFileSync(SECRET_TOOL_BIN, ['clear', ...attributes(publicKey)], {
-      stdio: ['ignore', 'ignore', 'pipe']
-    })
-  } catch {
-    throw new Error('failed to delete private key from Linux Secret Service')
+module.exports = {
+  get,
+  set,
+  delete (publicKey) {
+    try {
+      execFileSync(SECRET_TOOL_BIN, ['clear', ...attributes(publicKey)], {
+        stdio: ['ignore', 'ignore', 'pipe']
+      })
+    } catch {
+      throw new Error('failed to delete private key from Linux Secret Service')
+    }
   }
 }
-
-module.exports = { findGenericPassword, addGenericPassword, deleteGenericPassword }

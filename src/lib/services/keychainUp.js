@@ -1,27 +1,8 @@
-const { execFileSync } = require('child_process')
-
 const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const removeEnvKey = require('../helpers/removeEnvKey')
 const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
 const nativeProvider = require('../providers/native')
-const windowsCredentialManager = require('../helpers/windowsCredentialManager')
-const linuxSecretService = require('../helpers/linuxSecretService')
-
-const SECURITY_BIN = '/usr/bin/security'
-const SERVICE = 'dotenvx'
-
-function findGenericPassword (publicKey) {
-  if (process.platform === 'win32') {
-    return windowsCredentialManager.findGenericPassword(publicKey)
-  }
-
-  if (process.platform === 'linux') {
-    return linuxSecretService.findGenericPassword(publicKey)
-  }
-
-  return execFileSync(SECURITY_BIN, ['find-generic-password', '-s', SERVICE, '-a', publicKey, '-w'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
-}
 
 class KeychainUp {
   constructor (envFile = '.env', envKeysFile = '.env.keys') {
@@ -43,7 +24,7 @@ class KeychainUp {
     let existingPrivateKey
 
     try {
-      existingPrivateKey = findGenericPassword(publicKey)
+      existingPrivateKey = nativeProvider.get(publicKey)
     } catch {}
 
     const privateKey = readEnvKey(privateKeyName, envKeysFile, { strict: !existingPrivateKey })

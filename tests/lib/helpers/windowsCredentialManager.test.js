@@ -14,7 +14,7 @@ t.test('writes a generic credential through encoded PowerShell with the secret o
     child_process: { execFileSync }
   })
 
-  credentialManager.addGenericPassword('public-key', 'private-key-that-must-not-be-an-argument')
+  credentialManager.set('public-key', 'private-key-that-must-not-be-an-argument')
 
   const [command, args, options] = execFileSync.firstCall.args
   t.equal(command, 'powershell.exe')
@@ -37,7 +37,7 @@ t.test('reads a generic credential through encoded PowerShell', t => {
     child_process: { execFileSync }
   })
 
-  t.equal(credentialManager.findGenericPassword('public-key'), 'private-key')
+  t.equal(credentialManager.get('public-key'), 'private-key')
   t.same(JSON.parse(execFileSync.firstCall.args[2].input), {
     action: 'read',
     target: 'dotenvx:public-key'
@@ -51,7 +51,7 @@ t.test('deletes a generic credential through encoded PowerShell', t => {
     child_process: { execFileSync }
   })
 
-  credentialManager.deleteGenericPassword('public-key')
+  credentialManager.delete('public-key')
 
   t.match(Buffer.from(execFileSync.firstCall.args[1][3], 'base64').toString('utf16le'), /CredDeleteW/)
   t.same(JSON.parse(execFileSync.firstCall.args[2].input), {
@@ -68,7 +68,7 @@ t.test('sanitizes failed PowerShell writes', t => {
     child_process: { execFileSync }
   })
 
-  const error = t.throws(() => credentialManager.addGenericPassword('public-key', privateKey), /failed to save private key to Windows Credential Manager/)
+  const error = t.throws(() => credentialManager.set('public-key', privateKey), /failed to save private key to Windows Credential Manager/)
 
   t.notMatch(error.message, privateKey)
   t.end()
@@ -80,6 +80,6 @@ t.test('sanitizes failed PowerShell deletes', t => {
     child_process: { execFileSync }
   })
 
-  t.throws(() => credentialManager.deleteGenericPassword('public-key'), /failed to delete private key from Windows Credential Manager/)
+  t.throws(() => credentialManager.delete('public-key'), /failed to delete private key from Windows Credential Manager/)
   t.end()
 })

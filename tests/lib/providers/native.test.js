@@ -17,100 +17,136 @@ t.afterEach(() => {
 
 t.test('native provider is disabled outside supported platforms', ct => {
   const execFileSync = sinon.stub()
-  const findGenericPassword = sinon.stub()
-  const findLinuxSecret = sinon.stub()
+  const getWindowsCredential = sinon.stub()
+  const getLinuxSecret = sinon.stub()
   const provider = proxyquire('../../../src/lib/providers/native', {
     child_process: { execFileSync },
-    '../../helpers/windowsCredentialManager': { findGenericPassword },
-    '../../helpers/linuxSecretService': { findGenericPassword: findLinuxSecret }
+    '../../helpers/windowsCredentialManager': { get: getWindowsCredential },
+    '../../helpers/linuxSecretService': { get: getLinuxSecret }
   })
 
   setPlatform('freebsd')
 
   ct.same(provider('public-key'), {})
   ct.equal(execFileSync.callCount, 0)
-  ct.equal(findGenericPassword.callCount, 0)
-  ct.equal(findLinuxSecret.callCount, 0)
+  ct.equal(getWindowsCredential.callCount, 0)
+  ct.equal(getLinuxSecret.callCount, 0)
   ct.end()
 })
 
 t.test('native provider reads macOS Keychain on darwin', ct => {
-  const execFileSync = sinon.stub().returns('private-key\n')
+  const get = sinon.stub().returns('private-key')
   const provider = proxyquire('../../../src/lib/providers/native', {
-    child_process: { execFileSync }
+    '../../helpers/macosKeychain': { get }
   })
 
   setPlatform('darwin')
 
   ct.same(provider('public-key'), { 'public-key': 'private-key' })
-  ct.same(execFileSync.firstCall.args, ['/usr/bin/security', ['find-generic-password', '-s', 'dotenvx', '-a', 'public-key', '-w'], {
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'ignore']
-  }])
+  ct.same(get.firstCall.args, ['public-key'])
   ct.end()
 })
 
 t.test('native provider reads Windows Credential Manager on win32', ct => {
-  const findGenericPassword = sinon.stub().returns('private-key')
+  const get = sinon.stub().returns('private-key')
   const provider = proxyquire('../../../src/lib/providers/native', {
-    '../../helpers/windowsCredentialManager': { findGenericPassword }
+    '../../helpers/windowsCredentialManager': { get }
   })
 
   setPlatform('win32')
 
   ct.same(provider('public-key'), { 'public-key': 'private-key' })
-  ct.same(findGenericPassword.firstCall.args, ['public-key'])
+  ct.same(get.firstCall.args, ['public-key'])
   ct.end()
 })
 
 t.test('native provider reads Linux Secret Service on linux', ct => {
-  const findGenericPassword = sinon.stub().returns('private-key')
+  const get = sinon.stub().returns('private-key')
   const provider = proxyquire('../../../src/lib/providers/native', {
-    '../../helpers/linuxSecretService': { findGenericPassword }
+    '../../helpers/linuxSecretService': { get }
   })
 
   setPlatform('linux')
 
   ct.same(provider('public-key'), { 'public-key': 'private-key' })
-  ct.same(findGenericPassword.firstCall.args, ['public-key'])
+  ct.same(get.firstCall.args, ['public-key'])
   ct.end()
 })
 
 t.test('native provider writes macOS Keychain on darwin', ct => {
-  const execFileSync = sinon.stub()
+  const set = sinon.stub()
   const provider = proxyquire('../../../src/lib/providers/native', {
-    child_process: { execFileSync }
+    '../../helpers/macosKeychain': { set }
   })
 
   setPlatform('darwin')
   provider.set('public-key', 'private-key', 'dotenvx (PUB LIC)')
 
-  ct.same(execFileSync.firstCall.args, ['/usr/bin/security', ['add-generic-password', '-U', '-s', 'dotenvx', '-a', 'public-key', '-l', 'dotenvx (PUB LIC)', '-w', 'private-key'], { stdio: 'ignore' }])
+  ct.same(set.firstCall.args, ['public-key', 'private-key', 'dotenvx (PUB LIC)'])
   ct.end()
 })
 
 t.test('native provider writes Windows Credential Manager on win32', ct => {
-  const addGenericPassword = sinon.stub()
+  const set = sinon.stub()
   const provider = proxyquire('../../../src/lib/providers/native', {
-    '../../helpers/windowsCredentialManager': { addGenericPassword }
+    '../../helpers/windowsCredentialManager': { set }
   })
 
   setPlatform('win32')
   provider.set('public-key', 'private-key', 'dotenvx (PUB LIC)')
 
-  ct.same(addGenericPassword.firstCall.args, ['public-key', 'private-key'])
+  ct.same(set.firstCall.args, ['public-key', 'private-key', 'dotenvx (PUB LIC)'])
   ct.end()
 })
 
 t.test('native provider writes Linux Secret Service on linux', ct => {
-  const addGenericPassword = sinon.stub()
+  const set = sinon.stub()
   const provider = proxyquire('../../../src/lib/providers/native', {
-    '../../helpers/linuxSecretService': { addGenericPassword }
+    '../../helpers/linuxSecretService': { set }
   })
 
   setPlatform('linux')
   provider.set('public-key', 'private-key', 'dotenvx (PUB LIC)')
 
-  ct.same(addGenericPassword.firstCall.args, ['public-key', 'dotenvx (PUB LIC)', 'private-key'])
+  ct.same(set.firstCall.args, ['public-key', 'private-key', 'dotenvx (PUB LIC)'])
+  ct.end()
+})
+
+t.test('native provider deletes macOS Keychain item on darwin', ct => {
+  const deleteSecret = sinon.stub()
+  const provider = proxyquire('../../../src/lib/providers/native', {
+    '../../helpers/macosKeychain': { delete: deleteSecret }
+  })
+
+  setPlatform('darwin')
+  provider.delete('public-key')
+
+  ct.same(deleteSecret.firstCall.args, ['public-key'])
+  ct.end()
+})
+
+t.test('native provider deletes Windows Credential Manager item on win32', ct => {
+  const deleteSecret = sinon.stub()
+  const provider = proxyquire('../../../src/lib/providers/native', {
+    '../../helpers/windowsCredentialManager': { delete: deleteSecret }
+  })
+
+  setPlatform('win32')
+  provider.delete('public-key')
+
+  ct.same(deleteSecret.firstCall.args, ['public-key'])
+  ct.end()
+})
+
+t.test('native provider deletes Linux Secret Service item on linux', ct => {
+  const deleteSecret = sinon.stub()
+  const provider = proxyquire('../../../src/lib/providers/native', {
+    '../../helpers/linuxSecretService': { delete: deleteSecret }
+  })
+
+  setPlatform('linux')
+  provider.delete('public-key')
+
+  ct.same(deleteSecret.firstCall.args, ['public-key'])
   ct.end()
 })

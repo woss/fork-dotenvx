@@ -134,7 +134,7 @@ function run (payload) {
   })
 }
 
-function findGenericPassword (publicKey) {
+function get (publicKey) {
   try {
     return run({ action: 'read', target: target(publicKey) }).trim() || null
   } catch {
@@ -142,7 +142,7 @@ function findGenericPassword (publicKey) {
   }
 }
 
-function addGenericPassword (publicKey, privateKey) {
+function set (publicKey, privateKey) {
   try {
     run({ action: 'write', target: target(publicKey), username: publicKey, secret: privateKey })
   } catch {
@@ -150,12 +150,14 @@ function addGenericPassword (publicKey, privateKey) {
   }
 }
 
-function deleteGenericPassword (publicKey) {
-  try {
-    run({ action: 'delete', target: target(publicKey) })
-  } catch {
-    throw new Error('failed to delete private key from Windows Credential Manager')
+module.exports = {
+  get,
+  set,
+  delete (publicKey) {
+    try {
+      run({ action: 'delete', target: target(publicKey) })
+    } catch {
+      throw new Error('failed to delete private key from Windows Credential Manager')
+    }
   }
 }
-
-module.exports = { findGenericPassword, addGenericPassword, deleteGenericPassword }

@@ -1,40 +1,8 @@
-const { execFileSync } = require('child_process')
-
 const keynames = require('../conventions/keynames')
 const readEnvKey = require('../helpers/readEnvKey')
 const upsertEnvKey = require('../helpers/upsertEnvKey')
 const armoredKeyDisplay = require('../helpers/armoredKeyDisplay')
-const windowsCredentialManager = require('../helpers/windowsCredentialManager')
-const linuxSecretService = require('../helpers/linuxSecretService')
-
-const SECURITY_BIN = '/usr/bin/security'
-const SERVICE = 'dotenvx'
-
-function findGenericPassword (publicKey) {
-  if (process.platform === 'win32') {
-    return windowsCredentialManager.findGenericPassword(publicKey)
-  }
-
-  if (process.platform === 'linux') {
-    return linuxSecretService.findGenericPassword(publicKey)
-  }
-
-  return execFileSync(SECURITY_BIN, ['find-generic-password', '-s', SERVICE, '-a', publicKey, '-w'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
-}
-
-function deleteGenericPassword (publicKey) {
-  if (process.platform === 'win32') {
-    windowsCredentialManager.deleteGenericPassword(publicKey)
-    return
-  }
-
-  if (process.platform === 'linux') {
-    linuxSecretService.deleteGenericPassword(publicKey)
-    return
-  }
-
-  execFileSync(SECURITY_BIN, ['delete-generic-password', '-s', SERVICE, '-a', publicKey], { stdio: 'ignore' })
-}
+const nativeProvider = require('../providers/native')
 
 class KeychainDown {
   constructor (envFile = '.env', envKeysFile = '.env.keys') {
@@ -55,7 +23,7 @@ class KeychainDown {
     let privateKey
 
     try {
-      privateKey = findGenericPassword(publicKey)
+      privateKey = nativeProvider.get(publicKey)
       if (!privateKey) {
         const secretStore = process.platform === 'win32'
           ? 'Windows Credential Manager'
@@ -78,7 +46,7 @@ class KeychainDown {
     }
 
     upsertEnvKey(privateKeyName, privateKey, envKeysFile)
-    deleteGenericPassword(publicKey)
+    nativeProvider.delete(publicKey)
 
     return {
       changed: true,
