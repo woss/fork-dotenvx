@@ -8,7 +8,7 @@ function token () {
   try {
     const value = new Session().token()
     if (value && value.length > 1) {
-      console.log(options.unmask ? value : mask(value, 10))
+      console.log(options.unmask ? value : mask(value))
       return
     }
 
