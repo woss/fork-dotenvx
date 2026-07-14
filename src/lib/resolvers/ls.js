@@ -26,7 +26,7 @@ function excludePatternsFor (value) {
   return value.map(part => `**/${part}`)
 }
 
-async function ls (options = {}) {
+function crawler (options = {}) {
   const ignore = ['node_modules/**', '**/node_modules/**', '.git/**', '**/.git/**']
   const cwd = path.resolve(options.directory || './')
   const envFile = options.envFile || ['.env*']
@@ -56,7 +56,14 @@ async function ls (options = {}) {
     })
     .filter((filepath) => !exclude(filepath) && include(filepath))
     .crawl(cwd)
-    .withPromise()
+}
+
+async function ls (options = {}) {
+  return await crawler(options).withPromise()
+}
+
+ls.sync = function (options = {}) {
+  return crawler(options).sync()
 }
 
 module.exports = ls
