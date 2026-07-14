@@ -391,9 +391,11 @@ export function get(
  * @param directory - current working directory
  * @param envFile - glob pattern to match env files
  * @param excludeEnvFile - glob pattern to exclude env files
+ * @param onDirectory - called as each directory is traversed
  */
 export function ls(
   directory: string,
   envFile: string | string[],
-  excludeEnvFile: string | string[]
-): string[];
+  excludeEnvFile: string | string[],
+  onDirectory?: (directory: string) => void
+): Promise<string[]>;

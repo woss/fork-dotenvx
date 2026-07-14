@@ -424,23 +424,34 @@ t.test('parse ignores configured error codes',
   })
 
 t.test('ls finds env files',
-  ct => {
+  async ct => {
+    const directories = []
     const dir = ct.testdir({
       '.env': '',
       '.env.local': '',
       nested: {
         '.env.production': '',
-        'not-env.txt': ''
+        'not-env.txt': '',
+        deeper: {
+          '.env': ''
+        }
+      },
+      node_modules: {
+        ignored: {
+          '.env': ''
+        }
       }
     })
 
-    const files = main.ls(dir).sort()
+    const files = (await main.ls(dir, undefined, undefined, directory => directories.push(directory))).sort()
 
     ct.same(files, [
       '.env',
       '.env.local',
-      'nested/.env.production'
+      'nested/.env.production',
+      'nested/deeper/.env'
     ].sort())
+    ct.same(directories.sort(), ['nested', 'nested/deeper'])
 
     ct.end()
   })

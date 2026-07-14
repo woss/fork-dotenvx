@@ -18,7 +18,7 @@ function excludePatternsFor (value) {
   return value.map(part => `**/${part}`)
 }
 
-function ls (options = {}) {
+async function ls (options = {}) {
   const ignore = ['node_modules/**', '**/node_modules/**', '.git/**', '**/.git/**']
   const cwd = path.resolve(options.directory || './')
   const envFile = options.envFile || ['.env*']
@@ -30,12 +30,19 @@ function ls (options = {}) {
     dot: true,
     ignore: excludes
   })
+  const onDirectory = options.onDirectory || (() => {})
 
   return new Fdir()
     .withRelativePaths()
+    .exclude((dirname, directory) => {
+      if (dirname === 'node_modules' || dirname === '.git') return true
+
+      onDirectory(path.relative(cwd, directory) || '.')
+      return false
+    })
     .filter((filepath) => !exclude(filepath) && include(filepath))
     .crawl(cwd)
-    .sync()
+    .withPromise()
 }
 
 module.exports = ls
