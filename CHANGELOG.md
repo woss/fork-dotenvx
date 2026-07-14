@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 [Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.8.0...main)
 
+### Changed
+
+* **Breaking:** `ls` from `@dotenvx/dotenvx` now returns a `Promise<string[]>` and must be awaited. This keeps directory traversal asynchronous so CLI progress indicators can continue rendering while large directory trees are searched.
+
 ## [2.8.0](https://github.com/dotenvx/dotenvx/compare/v2.7.3...v2.8.0) (2026-07-14)
 
 ### Added

@@ -82,7 +82,7 @@ class Prebuild {
   }
 
   _filepaths () {
-    return ls({
+    return ls.sync({
       directory: this.directory,
       excludeEnvFile: this.excludeEnvFile
     })

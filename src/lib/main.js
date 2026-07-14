@@ -389,8 +389,8 @@ const get = async function (key, options = {}) {
 }
 
 /** @type {import('./main').ls} */
-const ls = function (directory, envFile, excludeEnvFile) {
-  return lsResolver({ directory, envFile, excludeEnvFile })
+const ls = async function (directory, envFile, excludeEnvFile, onDirectory) {
+  return await lsResolver({ directory, envFile, excludeEnvFile, onDirectory })
 }
 
 function resolveNoArmor (options = {}) {
