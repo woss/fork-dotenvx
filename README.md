@@ -2336,6 +2336,21 @@ $ dotenvx ls -ef '**/.env.prod*'
 ```
 
 </details>
+<details><summary>`ls --json`</summary><br>
+
+Print all matching `.env` files as a JSON array of absolute filepaths. Progress and summary details are written to stderr, so stdout can be safely piped to another command or file.
+
+```sh
+$ dotenvx ls --json
+[
+  "/path/to/project/.env",
+  "/path/to/project/apps/backend/.env"
+]
+
+$ dotenvx ls --json > dotenv-files.json
+```
+
+</details>
 <details><summary>`genexample`</summary><br>
 
 In one command, generate a `.env.example` file from your current `.env` file contents.
