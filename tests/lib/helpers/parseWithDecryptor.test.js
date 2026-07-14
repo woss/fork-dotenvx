@@ -56,6 +56,29 @@ t.test('parseWithDecryptor rethrows errors that do not request server-side decry
   ct.end()
 })
 
+t.test('parseWithDecryptor falls back to encrypted src when the decryptor is offline', async ct => {
+  const requiredError = serverSideDecryptionRequired()
+  const networkError = new Error('connect ENETUNREACH armor.dotenvx.com')
+  networkError.code = 'ENETUNREACH'
+  const parse = sinon.stub()
+  parse.onFirstCall().rejects(requiredError)
+  parse.onSecondCall().resolves({
+    parsed: { HELLO: 'encrypted:ciphertext' },
+    errors: [{ code: 'DECRYPTION_FAILED', message: 'could not decrypt HELLO' }]
+  })
+  const decryptor = sinon.stub().rejects(networkError)
+  const parseWithDecryptor = proxyquire('../../../src/lib/helpers/parseWithDecryptor', {
+    '@dotenvx/primitives': { parse, parseSync: sinon.stub() }
+  })
+
+  const result = await parseWithDecryptor('HELLO=encrypted:ciphertext\n', { decryptor })
+
+  ct.same(result.parsed, { HELLO: 'encrypted:ciphertext' })
+  ct.equal(parse.secondCall.args[0], 'HELLO=encrypted:ciphertext\n')
+  ct.equal(parse.secondCall.args[1].provider, null)
+  ct.end()
+})
+
 t.test('parseWithDecryptor.sync delegates through a synchronous decryptor', ct => {
   const error = serverSideDecryptionRequired()
   const parseSync = sinon.stub()
