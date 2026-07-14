@@ -5,8 +5,9 @@ const catchAndLog = require('./../../lib/helpers/catchAndLog')
 const createSpinner = require('../../lib/helpers/createSpinner')
 
 async function keypair (key) {
-  const options = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : this.opts()
-  const spinner = await createSpinner({ ...options, text: 'retrieving' })
+  const options = this.opts()
+  const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
+  const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'retrieving' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
   if (key) {

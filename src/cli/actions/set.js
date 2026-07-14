@@ -10,7 +10,8 @@ const prompts = require('../../lib/helpers/prompts')
 const Session = require('../../db/session')
 
 async function set (key, value) {
-  const options = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : this.opts()
+  const options = this.opts()
+  const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
 
   let encrypt = true
   let settingMessage = 'encrypting'
@@ -47,7 +48,7 @@ async function set (key, value) {
     }
   }
 
-  const spinner = await createSpinner({ ...options, text: settingMessage })
+  const spinner = await createSpinner({ ...spinnerOptions, ...options, text: settingMessage })
   const sesh = new Session()
 
   logger.debug(`key: ${key}`)

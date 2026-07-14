@@ -11,9 +11,9 @@ const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
 
 async function get (key) {
-  const commandOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : this.opts()
-  const options = normalizeDotenvConfigConvention(commandOptions)
-  const spinner = await createSpinner({ ...options, text: 'decrypting' })
+  const options = normalizeDotenvConfigConvention(this.opts())
+  const spinnerOptions = typeof this.optsWithGlobals === 'function' ? this.optsWithGlobals() : options
+  const spinner = await createSpinner({ ...spinnerOptions, ...options, text: 'decrypting' })
 
   logger.debug(`options: ${JSON.stringify(options)}`)
   if (key) {
