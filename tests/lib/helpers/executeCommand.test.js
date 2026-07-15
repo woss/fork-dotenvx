@@ -32,6 +32,7 @@ t.test('executeCommand - redacts stdout and stderr even when attached to a TTY',
   await executeCommand(['node', 'index.js'], { HELLO: 'secret' }, ['secret'])
 
   ct.same(execaStub.firstCall.args[2].stdio, ['inherit', 'pipe', 'pipe'])
+  ct.equal(execaStub.firstCall.args[2].buffer, false)
   ct.ok(child.stdout.on.calledWith('data'), 'stdout is intercepted')
   ct.ok(child.stderr.on.calledWith('data'), 'stderr is intercepted')
 

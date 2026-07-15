@@ -136,6 +136,7 @@ async function executeCommand (commandArgs, env, sensitiveValues = []) {
 
     child = execute.execa(commandArgs[0], commandArgs.slice(1), {
       stdio: ['inherit', redactStdout ? 'pipe' : 'inherit', redactStderr ? 'pipe' : 'inherit'],
+      buffer: false,
       env: { ...process.env, ...env }
     })
 
