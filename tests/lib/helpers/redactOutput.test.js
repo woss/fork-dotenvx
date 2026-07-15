@@ -29,6 +29,25 @@ t.test('createRedactedStreamWriter redacts values split across chunks', ct => {
   ct.end()
 })
 
+t.test('createRedactedStreamWriter does not flush a partial secret while waiting for another chunk', async ct => {
+  const output = new PassThrough()
+  let written = ''
+  output.on('data', chunk => {
+    written += chunk.toString()
+  })
+
+  const writer = createRedactedStreamWriter(output, ['super-secret'])
+  writer.write('value=super-')
+
+  await new Promise(resolve => setTimeout(resolve, 150))
+  ct.equal(written, 'value=')
+
+  writer.write('secret\n')
+  writer.flush()
+
+  ct.equal(written, 'value=[REDACTED]\n')
+})
+
 t.test('createRedactedStreamWriter passes through unrelated output immediately', ct => {
   const output = new PassThrough()
   let written = ''

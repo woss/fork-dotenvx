@@ -1,7 +1,5 @@
 const redact = require('./redact')
 
-const FLUSH_TIMEOUT_MS = 100
-
 function normalizedValues (values) {
   return [...new Set((values || [])
     .filter(value => value !== undefined && value !== null && `${value}`.length > 0)
@@ -75,24 +73,14 @@ function safeBoundary (value, boundary, sensitiveValues) {
 function createRedactedStreamWriter (stream, sensitiveValues) {
   const values = normalizedValues(sensitiveValues)
   let pending = ''
-  let flushTimeout
-
-  const clearFlushTimeout = () => {
-    if (flushTimeout) {
-      clearTimeout(flushTimeout)
-      flushTimeout = undefined
-    }
-  }
 
   const flush = () => {
-    clearFlushTimeout()
     if (!pending) return
     stream.write(redactOutput(pending, values))
     pending = ''
   }
 
   const write = (chunk) => {
-    clearFlushTimeout()
     pending += chunk.toString()
 
     const holdbackLength = partialMatchLength(pending, values)
@@ -103,10 +91,6 @@ function createRedactedStreamWriter (stream, sensitiveValues) {
     pending = pending.slice(boundary)
 
     if (output) stream.write(redactOutput(output, values))
-    if (pending) {
-      flushTimeout = setTimeout(flush, FLUSH_TIMEOUT_MS)
-      if (typeof flushTimeout.unref === 'function') flushTimeout.unref()
-    }
   }
 
   return { write, flush }
