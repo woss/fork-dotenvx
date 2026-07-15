@@ -328,30 +328,32 @@ t.test('#run - encrypted .env.production with no .env.keys, with DOTENV_PRIVATE_
   ct.end()
 })
 
-t.test('#run - redacts decrypted values from stdout and stderr but preserves plaintext values', ct => {
+t.test('#run - redacts injected values from stdout and stderr except _PLAIN values', ct => {
   execShell(`
-    touch .env
-    ${dotenvx} set SECRET super-secret-value
+    echo "SECRET=super-secret-value" > .env
     echo "PUBLIC=public-value" >> .env
-    echo "process.stdout.write('stdout ' + process.env.SECRET + ' ' + process.env.PUBLIC); process.stderr.write('stderr ' + process.env.SECRET + ' ' + process.env.PUBLIC)" > index.js
+    echo "VISIBLE_PLAIN=visible-value" >> .env
+    echo "process.stdout.write('stdout ' + process.env.SECRET + ' ' + process.env.PUBLIC + ' ' + process.env.INLINE + ' ' + process.env.VISIBLE_PLAIN); process.stderr.write('stderr ' + process.env.SECRET + ' ' + process.env.PUBLIC + ' ' + process.env.INLINE + ' ' + process.env.VISIBLE_PLAIN)" > index.js
   `)
 
   const command = `${node} index.js`
-  const output = execShell(`${dotenvx} run --quiet --redact -- ${command}`)
+  const output = execShell(`${dotenvx} run --quiet --redact --env INLINE=inline-value -- ${command}`)
 
-  ct.equal(output.stdout, 'stdout [REDACTED] public-value')
-  ct.equal(output.stderr, 'stderr [REDACTED] public-value')
+  ct.equal(output.stdout, 'stdout [REDACTED] [REDACTED] [REDACTED] visible-value')
+  ct.equal(output.stderr, 'stderr [REDACTED] [REDACTED] [REDACTED] visible-value')
   ct.notMatch(output.stdout, /super-secret-value/)
   ct.notMatch(output.stderr, /super-secret-value/)
+  ct.notMatch(output.stdout, /public-value/)
+  ct.notMatch(output.stderr, /public-value/)
 
-  const unredactedOutput = execShell(`${dotenvx} run --quiet -- ${command}`)
-  ct.equal(unredactedOutput.stdout, 'stdout super-secret-value public-value')
-  ct.equal(unredactedOutput.stderr, 'stderr super-secret-value public-value')
+  const unredactedOutput = execShell(`${dotenvx} run --quiet --env INLINE=inline-value -- ${command}`)
+  ct.equal(unredactedOutput.stdout, 'stdout super-secret-value public-value inline-value visible-value')
+  ct.equal(unredactedOutput.stderr, 'stderr super-secret-value public-value inline-value visible-value')
 
   ct.end()
 })
 
-t.test('#run - redacts decrypted values repeated in command failure diagnostics', ct => {
+t.test('#run - redacts injected values repeated in command failure diagnostics', ct => {
   execShell(`
     touch .env
     ${dotenvx} set SECRET super-secret-value
@@ -364,6 +366,25 @@ t.test('#run - redacts decrypted values repeated in command failure diagnostics'
   ct.match(output.stderr, /\[REDACTED\]/)
   ct.notMatch(output.stderr, /super-secret-value/)
   ct.equal(output.exitCode, 1)
+
+  ct.end()
+})
+
+t.test('#run - redacts pre-existing values when their keys are declared in .env', ct => {
+  execShell(`
+    echo "SECRET=file-secret" > .env
+    echo "VISIBLE_PLAIN=file-visible" >> .env
+    echo "process.stdout.write(process.env.SECRET + ' ' + process.env.VISIBLE_PLAIN)" > index.js
+  `)
+
+  const command = `${node} index.js`
+  const output = execShell(`SECRET=external-secret VISIBLE_PLAIN=external-visible ${dotenvx} run --quiet --redact -- ${command}`)
+
+  ct.equal(output.stdout, '[REDACTED] external-visible')
+  ct.notMatch(output.stdout, /external-secret/)
+
+  const unredactedOutput = execShell(`SECRET=external-secret VISIBLE_PLAIN=external-visible ${dotenvx} run --quiet -- ${command}`)
+  ct.equal(unredactedOutput.stdout, 'external-secret external-visible')
 
   ct.end()
 })

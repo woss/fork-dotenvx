@@ -1474,18 +1474,18 @@ $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 </details>
 <details><summary>`run --redact`</summary><br>
 
-Redact successfully decrypted values from the command's stdout and stderr. The command still receives the real values; only its output is filtered.
+Redact injected values from the command's stdout and stderr. The command still receives the real values; only its output is filtered. Keys ending in `_PLAIN` are left visible.
 
 ```sh
-$ touch .env
-$ dotenvx set SECRET super-secret-value
-$ echo "console.log(process.env.SECRET)" > index.js
+$ echo "SECRET=super-secret-value" > .env
+$ echo "VISIBLE_PLAIN=visible-value" >> .env
+$ echo "console.log(process.env.SECRET, process.env.VISIBLE_PLAIN)" > index.js
 
 $ dotenvx run --redact --quiet -- node index.js
-[REDACTED]
+[REDACTED] visible-value
 ```
 
-Redaction is off by default. It applies only to values that were encrypted, successfully decrypted, and injected. Plaintext values are left unchanged. Matching is exact, so transformed or derived values are not redacted.
+Redaction is off by default. It applies to every key declared in `.env` files and `--env` flags unless the key ends in `_PLAIN`. If an existing environment variable takes precedence, its effective value is redacted too. Matching is exact, so transformed or derived values are not redacted.
 
 Because redaction filters stdout and stderr, interactive commands that require a TTY may behave differently.
 

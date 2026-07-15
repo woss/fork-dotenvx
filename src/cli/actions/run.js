@@ -13,7 +13,7 @@ const resolveEnvKeysFile = require('../../lib/helpers/resolveEnvKeysFile')
 const mask = require('../../lib/helpers/mask')
 const maskEnvSrc = require('../../lib/helpers/maskEnvSrc')
 const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
-const decryptedValues = require('../../lib/helpers/decryptedValues')
+const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
 
 const { determine } = require('./../../lib/helpers/envResolution')
@@ -127,7 +127,7 @@ async function run () {
     })
 
     if (redactEnabled) {
-      sensitiveValues = decryptedValues(processedEnvs)
+      sensitiveValues = redactedValues(processedEnvs)
     }
 
     if (maskEnabled) {
