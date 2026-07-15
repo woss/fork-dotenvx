@@ -145,7 +145,7 @@ const config = function (options = {}) {
     if (readableFilepaths.length > 0) {
       msg += ` from ${readableFilepaths.join(', ')}`
     }
-    logger.success(`⟐ ${msg}`)
+    logger.successstderr(`⟐ ${msg}`)
 
     if (lastError) {
       return { parsed: parsedAll, error: lastError }

@@ -190,7 +190,7 @@ async function run () {
     }
 
     if (spinner) spinner.stop()
-    logger.success(`⟐ ${msg}`)
+    logger.successstderr(`⟐ ${msg}`)
   } catch (error) {
     if (spinner) spinner.stop()
     catchAndLog(error)

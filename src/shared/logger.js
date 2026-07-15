@@ -7,6 +7,7 @@ const levels = {
   infoerror: 0,
   warn: 1,
   success: 2,
+  successstderr: 2,
   successv: 2,
   info: 2,
   help: 2,
@@ -30,8 +31,14 @@ let currentName = 'dotenvx' // default logger name
 let currentVersion = packageJson.version // default logger version
 
 function stderr (level, message) {
-  const formattedMessage = formatMessage(level, message)
-  console.error(formattedMessage)
+  if (levels[level] === undefined) {
+    throw new Errors({ level }).missingLogLevel()
+  }
+
+  if (levels[level] <= currentLevel) {
+    const formattedMessage = formatMessage(level, message)
+    console.error(formattedMessage)
+  }
 }
 
 function stdout (level, message) {
@@ -59,6 +66,8 @@ function formatMessage (level, message) {
       return warn(formattedMessage)
     // successes
     case 'success':
+      return success(formattedMessage)
+    case 'successstderr':
       return success(formattedMessage)
     case 'successv': // success with 'version'
       return successv(`${formattedMessage} · ${currentName}@${currentVersion}`)
@@ -88,6 +97,7 @@ const logger = {
   warn: (msg) => stdout('warn', msg),
   // success
   success: (msg) => stdout('success', msg),
+  successstderr: (msg) => stderr('successstderr', msg),
   successv: (msg) => stdout('successv', msg),
   // info
   info: (msg) => stdout('info', msg),
