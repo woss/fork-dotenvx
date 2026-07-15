@@ -1171,6 +1171,70 @@ Hello String
 ```
 
 </details>
+<details><summary>`run --redact`</summary><br>
+
+Run any command with real environment variables while automatically redacting their values from stdout and stderr. Keys ending in `_PLAIN` are left visible.
+
+```sh
+$ echo "SECRET=super-secret-value" > .env
+$ echo "VISIBLE_PLAIN=visible-value" >> .env
+$ echo "console.log(process.env.SECRET, process.env.VISIBLE_PLAIN)" > index.js
+
+$ dotenvx run --redact --quiet -- node index.js
+[REDACTED] visible-value
+```
+
+Redaction is off by default. It applies to every key declared in `.env` files and `--env` flags unless the key ends in `_PLAIN`. If an existing environment variable takes precedence, its effective value is redacted too. Matching is exact, so transformed or derived values are not redacted.
+
+When stdin, stdout, and stderr are attached to a terminal, dotenvx preserves interactive behavior on macOS and Linux systems with `script` available. Piped and redirected commands continue to use normal stdin, stdout, and stderr streams.
+
+</details>
+<details><summary>`run --redact -- claude -p`</summary><br>
+
+Run Claude in print mode with real environment variables while redacting any values it prints.
+
+```sh
+$ echo "SECRET=super-secret-value" > .env
+
+$ dotenvx run --redact --quiet -- claude -p 'Print the value of $SECRET'
+[REDACTED]
+```
+
+</details>
+<details><summary>`run --redact -- claude`</summary><br>
+
+Start a fully interactive Claude session. Claude receives the real values, but any values it prints are redacted.
+
+```sh
+$ echo "SECRET=super-secret-value" > .env
+
+$ dotenvx run --redact --quiet -- claude
+```
+
+</details>
+<details><summary>`run --redact -- codex exec`</summary><br>
+
+Run Codex non-interactively with real environment variables while redacting any values it prints.
+
+```sh
+$ echo "SECRET=super-secret-value" > .env
+
+$ dotenvx run --redact --quiet -- codex exec 'Print the value of $SECRET'
+[REDACTED]
+```
+
+</details>
+<details><summary>`run --redact -- codex`</summary><br>
+
+Start a fully interactive Codex session. Codex receives the real values, but any values it prints are redacted.
+
+```sh
+$ echo "SECRET=super-secret-value" > .env
+
+$ dotenvx run --redact --quiet -- codex
+```
+
+</details>
 <details><summary>`run --overload`</summary><br>
 
 Override existing env variables. These can be variables already on your machine or variables loaded as files consecutively. The last variable seen will 'win'.
@@ -1470,24 +1534,6 @@ $ dotenvx set HELLO World -fk .env.keys -f apps/app1/.env
 
 $ dotenvx run -fk .env.keys -f apps/app1/.env -- yourcommand
 ```
-
-</details>
-<details><summary>`run --redact`</summary><br>
-
-Redact injected values from the command's stdout and stderr. The command still receives the real values; only its output is filtered. Keys ending in `_PLAIN` are left visible.
-
-```sh
-$ echo "SECRET=super-secret-value" > .env
-$ echo "VISIBLE_PLAIN=visible-value" >> .env
-$ echo "console.log(process.env.SECRET, process.env.VISIBLE_PLAIN)" > index.js
-
-$ dotenvx run --redact --quiet -- node index.js
-[REDACTED] visible-value
-```
-
-Redaction is off by default. It applies to every key declared in `.env` files and `--env` flags unless the key ends in `_PLAIN`. If an existing environment variable takes precedence, its effective value is redacted too. Matching is exact, so transformed or derived values are not redacted.
-
-Because redaction filters stdout and stderr, interactive commands that require a TTY may behave differently.
 
 </details>
 <details><summary>`run --mask`</summary><br>
