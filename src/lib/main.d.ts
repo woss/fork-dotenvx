@@ -173,7 +173,6 @@ export interface DotenvConfigOptions {
     | 'error'
     | 'warn'
     | 'success'
-    | 'successv'
     | 'info'
     | 'help'
     | 'verbose'

@@ -1,4 +1,3 @@
-const packageJson = require('../lib/helpers/packageJson')
 const Errors = require('../lib/helpers/errors')
 const { getColor, bold } = require('./colors')
 
@@ -8,7 +7,6 @@ const levels = {
   warn: 1,
   success: 2,
   successstderr: 2,
-  successv: 2,
   info: 2,
   help: 2,
   verbose: 4,
@@ -20,15 +18,12 @@ const error = (m) => bold(getColor('red')(`☠ ${m}`))
 const infoerror = getColor('gray') // actually an error
 const warn = (m) => getColor('orangered')(`⚠ ${m}`)
 const success = getColor('amber')
-const successv = (m) => getColor('amber')(`⟐ ${m}`)
 const info = getColor('gray')
 const help = getColor('dodgerblue')
 const verbose = (m) => getColor('plum')(`┆ ${m}`)
 const debug = (m) => getColor('plum')(`┆ ${m}`)
 
 let currentLevel = levels.info // default log level
-let currentName = 'dotenvx' // default logger name
-let currentVersion = packageJson.version // default logger version
 
 function stderr (level, message) {
   if (levels[level] === undefined) {
@@ -69,8 +64,6 @@ function formatMessage (level, message) {
       return success(formattedMessage)
     case 'successstderr':
       return success(formattedMessage)
-    case 'successv': // success with 'version'
-      return successv(`${formattedMessage} · ${currentName}@${currentVersion}`)
     // info
     case 'info':
       return info(formattedMessage)
@@ -94,19 +87,18 @@ const logger = {
   error: (msg) => stderr('error', msg),
   infoerror: (msg) => stderr('infoerror', msg),
   // warns
-  warn: (msg) => stdout('warn', msg),
+  warn: (msg) => stderr('warn', msg),
   // success
   success: (msg) => stdout('success', msg),
   successstderr: (msg) => stderr('successstderr', msg),
-  successv: (msg) => stdout('successv', msg),
   // info
   info: (msg) => stdout('info', msg),
   // help
-  help: (msg) => stdout('help', msg),
+  help: (msg) => stderr('help', msg),
   // verbose
-  verbose: (msg) => stdout('verbose', msg),
+  verbose: (msg) => stderr('verbose', msg),
   // debug
-  debug: (msg) => stdout('debug', msg),
+  debug: (msg) => stderr('debug', msg),
   setLevel: (level) => {
     if (levels[level] !== undefined) {
       currentLevel = levels[level]
@@ -114,11 +106,9 @@ const logger = {
     }
   },
   setName: (name) => {
-    currentName = name
     logger.name = name
   },
   setVersion: (version) => {
-    currentVersion = version
     logger.version = version
   }
 }

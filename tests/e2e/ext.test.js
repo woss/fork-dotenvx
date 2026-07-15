@@ -3,7 +3,7 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const { which } = require('@dotenvx/tooling')
-const { execSync, spawnSync } = require('child_process')
+const { spawnSync } = require('child_process')
 
 const originalDir = process.cwd()
 const osTempDir = fs.realpathSync(os.tmpdir())
@@ -12,10 +12,12 @@ const node = path.resolve(which.sync('node')) // /opt/homebrew/node
 const dotenvx = `${node} ${path.join(originalDir, 'src/cli/dotenvx.js')}`
 
 function execShell (commands) {
-  return execSync(commands, {
+  const result = spawnSync(commands, {
     encoding: 'utf8',
     shell: true
-  }).trim()
+  })
+
+  return `${result.stdout || ''}${result.stderr || ''}`.trim()
 }
 
 function runCommand (command, cwd) {
