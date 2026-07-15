@@ -2,13 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.9.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.10.0...main)
+
+## [2.10.0](https://github.com/dotenvx/dotenvx/compare/v2.9.0...v2.10.0) (2026-07-15)
+
+### Added
+
+* Add `run --redact` to keep secrets out of command output. ([#894](https://github.com/dotenvx/dotenvx/pull/894))
 
 ## [2.9.0](https://github.com/dotenvx/dotenvx/compare/v2.8.0...v2.9.0) (2026-07-14)
 
 ### Changed
 
-* BREAKING: `ls` from `@dotenvx/dotenvx` is now async/await.
+* BREAKING: `ls` from `@dotenvx/dotenvx` is now async/await. ([#893](https://github.com/dotenvx/dotenvx/pull/893))
 
 ## [2.8.0](https://github.com/dotenvx/dotenvx/compare/v2.7.3...v2.8.0) (2026-07-14)
 
