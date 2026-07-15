@@ -17,6 +17,21 @@ t.test('returns WriteStream.prototype.getColorDepth()', (ct) => {
   ct.end()
 })
 
+t.test('returns no color for a redirected stream', (ct) => {
+  const stream = { isTTY: false }
+
+  ct.equal(depth.getColorDepth(stream), 1)
+  ct.end()
+})
+
+t.test('returns the color depth of a TTY stream', (ct) => {
+  const stream = { isTTY: true, getColorDepth: sinon.stub().returns(8) }
+
+  ct.equal(depth.getColorDepth(stream), 8)
+  ct.ok(stream.getColorDepth.calledOnce)
+  ct.end()
+})
+
 t.test('falls back to process.env.TERM when getColorDepth throws an error (deno scenario)', (ct) => {
   const stub = sinon.stub(WriteStream.prototype, 'getColorDepth').throws(new TypeError('Not a function'))
 

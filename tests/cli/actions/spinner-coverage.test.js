@@ -7,7 +7,6 @@ function makeNoopLogger () {
     debug: () => {},
     verbose: () => {},
     success: () => {},
-    successstderr: () => {},
     error: () => {}
   }
 }

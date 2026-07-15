@@ -33,8 +33,8 @@ const colorsTrueColor = new Map([
   ['red', [140, 35, 50]] // #8C2332 brighter garnet
 ])
 
-function getColor (color) {
-  const colorDepth = depth.getColorDepth()
+function getColor (color, stream) {
+  const colorDepth = depth.getColorDepth(stream)
   if (!colors256.has(color)) {
     throw new Errors({ color }).invalidColor()
   }
@@ -53,8 +53,8 @@ function getColor (color) {
   return (message) => message
 }
 
-function bold (message) {
-  if (depth.getColorDepth() >= 4) {
+function bold (message, stream) {
+  if (depth.getColorDepth(stream) >= 4) {
     return `\x1b[1m${message}\x1b[22m`
   }
 

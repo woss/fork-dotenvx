@@ -3,7 +3,7 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const { which } = require('@dotenvx/tooling')
-const { execSync } = require('child_process')
+const { execSync, spawnSync } = require('child_process')
 
 let tempDir = ''
 const osTempDir = fs.realpathSync(os.tmpdir())
@@ -17,6 +17,19 @@ function execShell (commands) {
     encoding: 'utf8',
     shell: true
   }).trim()
+}
+
+function execShellResult (commands) {
+  const result = spawnSync(commands, {
+    encoding: 'utf8',
+    shell: true
+  })
+
+  return {
+    stdout: result.stdout.trim(),
+    stderr: result.stderr.trim(),
+    status: result.status
+  }
 }
 
 t.beforeEach((ct) => {
@@ -43,8 +56,9 @@ t.test('#decrypt', ct => {
   execShell(`${dotenvx} encrypt`)
   const DOTENV_PUBLIC_KEY = execShell(`${dotenvx} get DOTENV_PUBLIC_KEY`)
 
-  const output = execShell(`${dotenvx} decrypt`)
-  ct.equal(output, '◇ decrypted (.env)')
+  const output = execShellResult(`${dotenvx} decrypt`)
+  ct.equal(output.stdout, '')
+  ct.equal(output.stderr, '◇ decrypted (.env)')
 
   execShell('rm .env.keys')
 
@@ -107,8 +121,8 @@ t.test('#decrypt - partially decrypts when another encrypted value is bad', ct =
   const envSrc = fs.readFileSync(path.join(tempDir, '.env'), 'utf8')
 
   ct.equal(exitCode, 1, 'should exit with code 1 when one encrypted value cannot be decrypted')
-  ct.equal(stdout, '◇ decrypted (.env)\n')
-  ct.equal(stderr, '☠ [DECRYPTION_FAILED] could not decrypt FAKE. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n')
+  ct.equal(stdout, '')
+  ct.equal(stderr, '☠ [DECRYPTION_FAILED] could not decrypt FAKE. fix: [https://github.com/dotenvx/dotenvx/issues/757]\n◇ decrypted (.env)\n')
   ct.match(envSrc, /HELLO=World/)
   ct.match(envSrc, /FAKE="encrypted:fake123345343434"/)
 

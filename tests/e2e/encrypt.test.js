@@ -4,7 +4,7 @@ const os = require('os')
 const path = require('path')
 const { which } = require('@dotenvx/tooling')
 const { dotenv } = require('@dotenvx/tooling')
-const { execSync } = require('child_process')
+const { execSync, spawnSync } = require('child_process')
 
 let tempDir = ''
 const osTempDir = fs.realpathSync(os.tmpdir())
@@ -27,6 +27,19 @@ function execShell (commands) {
   }).trim()
 
   return stripArmorStatus(output)
+}
+
+function execShellResult (commands) {
+  const result = spawnSync(commands, {
+    encoding: 'utf8',
+    shell: true
+  })
+
+  return {
+    stdout: stripArmorStatus(result.stdout.trim()),
+    stderr: result.stderr.trim(),
+    status: result.status
+  }
 }
 
 function execShellFailure (commands) {
@@ -62,26 +75,28 @@ t.test('#encrypt', ct => {
     echo "HELLO=World" > .env
   `)
 
-  const output = execShell(`${dotenvx} encrypt`)
+  const output = execShellResult(`${dotenvx} encrypt`)
 
-  ct.equal(output, '◈ encrypted (.env)')
+  ct.equal(output.stdout, '')
+  ct.equal(output.stderr, '◈ encrypted (.env)')
 
   ct.end()
 })
 
 t.test('#encrypt -k', ct => {
-  ct.plan(7)
+  ct.plan(8)
 
   execShell(`
     echo "HELLO=World\nHI=thar" > .env
   `)
 
-  const output = execShell(`${dotenvx} encrypt -k HI`)
+  const output = execShellResult(`${dotenvx} encrypt -k HI`)
 
   const parsedEnvKeys = dotenv.parse(fs.readFileSync(path.join(tempDir, '.env.keys')))
   const DOTENV_PRIVATE_KEY = parsedEnvKeys.DOTENV_PRIVATE_KEY
 
-  ct.equal(output, '◈ encrypted (.env)')
+  ct.equal(output.stdout, '')
+  ct.equal(output.stderr, '◈ encrypted (.env)')
 
   execShell('rm .env.keys')
 

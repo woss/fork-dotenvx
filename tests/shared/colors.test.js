@@ -40,6 +40,17 @@ t.test('getColor without color support', (ct) => {
   ct.end()
 })
 
+t.test('getColor passes the destination stream to color depth detection', (ct) => {
+  const stream = { isTTY: false }
+  const stub = sinon.stub(depth, 'getColorDepth').returns(1)
+
+  ct.equal(getColor('gray', stream)('hello'), 'hello')
+  ct.ok(stub.calledWith(stream))
+
+  stub.restore()
+  ct.end()
+})
+
 t.test('getColor invalid color', (ct) => {
   try {
     getColor('invalid')
