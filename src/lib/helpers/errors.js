@@ -23,6 +23,7 @@ const ISSUE_BY_CODE = {
   MISSING_VALUE: 'https://github.com/dotenvx/dotenvx/issues/864',
   FILE_NOT_WRITABLE: 'https://github.com/dotenvx/dotenvx/issues/890',
   PRECOMMIT_HOOK_MODIFY_FAILED: 'try again or report error',
+  VALIDATION_FAILED: 'https://github.com/dotenvx/dotenvx/issues/905',
   WRONG_PRIVATE_KEY: 'https://github.com/dotenvx/dotenvx/issues/466'
 }
 
@@ -309,6 +310,18 @@ class Errors {
   missingValue () {
     const code = 'MISSING_VALUE'
     const message = `[${code}] missing value (${this.key})`
+    const help = `fix: [${ISSUE_BY_CODE[code]}]`
+
+    const e = new Error(message)
+    e.code = code
+    e.help = help
+    e.messageWithHelp = `${message}. ${help}`
+    return e
+  }
+
+  validationFailed () {
+    const code = 'VALIDATION_FAILED'
+    const message = `[${code}] ${this.message}`
     const help = `fix: [${ISSUE_BY_CODE[code]}]`
 
     const e = new Error(message)

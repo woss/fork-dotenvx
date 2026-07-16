@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const { logger } = require('./../../shared/logger')
+const { parseSync } = require('@dotenvx/primitives')
 
 const executeCommand = require('./../../lib/helpers/executeCommand')
 const envsResolver = require('./../../lib/resolvers/envs')
@@ -17,6 +18,7 @@ const maskProcessedEnvs = require('../../lib/helpers/maskProcessedEnvs')
 const redactedValues = require('../../lib/helpers/redactedValues')
 const { redactOutput } = require('../../lib/helpers/redactOutput')
 const Errors = require('../../lib/helpers/errors')
+const validate = require('../../lib/helpers/validate')
 
 const { determine } = require('./../../lib/helpers/envResolution')
 
@@ -147,6 +149,24 @@ async function run () {
     if (maskEnabled) {
       commandEnv = { ...process.env }
       maskProcessedEnvs(processedEnvs, commandEnv, showChar)
+    }
+
+    if (options.validate && fs.existsSync('.env.example')) {
+      const { parsed: example } = parseSync(fs.readFileSync('.env.example'), { processEnv: {} })
+      const validation = validate(example, process.env)
+
+      if (!validation.valid) {
+        const message = validation.errors.map(error => error.message).join('; ')
+        const error = new Errors({ message }).validationFailed()
+
+        if (ignore.includes(error.code)) {
+          logger.verbose(`ignored: ${error.message}`)
+        } else if (options.strict) {
+          throw error
+        } else {
+          logger.error(error.messageWithHelp || error.message)
+        }
+      }
     }
 
     for (const processedEnv of processedEnvs) {
