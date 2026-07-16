@@ -46,8 +46,8 @@ t.test('#errors validationFailed', ct => {
 
   t.equal(result.code, 'VALIDATION_FAILED')
   t.equal(result.message, '[VALIDATION_FAILED] missing required (DATABASE_URL)')
-  t.equal(result.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/905]')
-  t.equal(result.messageWithHelp, '[VALIDATION_FAILED] missing required (DATABASE_URL). fix: [https://github.com/dotenvx/dotenvx/issues/905]')
+  t.equal(result.help, 'fix: [https://github.com/dotenvx/dotenvx/issues/907]')
+  t.equal(result.messageWithHelp, '[VALIDATION_FAILED] missing required (DATABASE_URL). fix: [https://github.com/dotenvx/dotenvx/issues/907]')
 
   ct.end()
 })

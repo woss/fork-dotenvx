@@ -23,7 +23,7 @@ const ISSUE_BY_CODE = {
   MISSING_VALUE: 'https://github.com/dotenvx/dotenvx/issues/864',
   FILE_NOT_WRITABLE: 'https://github.com/dotenvx/dotenvx/issues/890',
   PRECOMMIT_HOOK_MODIFY_FAILED: 'try again or report error',
-  VALIDATION_FAILED: 'https://github.com/dotenvx/dotenvx/issues/905',
+  VALIDATION_FAILED: 'https://github.com/dotenvx/dotenvx/issues/907',
   WRONG_PRIVATE_KEY: 'https://github.com/dotenvx/dotenvx/issues/466'
 }
 

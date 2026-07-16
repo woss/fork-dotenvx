@@ -152,8 +152,9 @@ async function run () {
     }
 
     if (options.validate && fs.existsSync('.env.example')) {
-      const { parsed: example } = parseSync(fs.readFileSync('.env.example'), { processEnv: {} })
-      const validation = validate(example, process.env)
+      const exampleSrc = fs.readFileSync('.env.example', 'utf8')
+      const { parsed: example } = parseSync(exampleSrc, { processEnv: {} })
+      const validation = validate(example, process.env, { exampleSrc })
 
       if (!validation.valid) {
         const message = validation.errors.map(error => error.message).join('; ')
