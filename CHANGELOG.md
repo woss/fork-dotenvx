@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.11.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.11.3...main)
+
+## [2.11.3](https://github.com/dotenvx/dotenvx/compare/v2.11.2...v2.11.3) (2026-07-16)
+
+### Changed
+
+* Improve command substitution for nested commands ([#902](https://github.com/dotenvx/dotenvx/pull/902))
 
 ## [2.11.2](https://github.com/dotenvx/dotenvx/compare/v2.11.1...v2.11.2) (2026-07-16)
 
