@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.12.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.13.0...main)
+
+## [2.13.0](https://github.com/dotenvx/dotenvx/compare/v2.12.0...v2.13.0) (2026-07-16)
+
+### Added
+
+* Add `get --eval-export` flag ([#904](https://github.com/dotenvx/dotenvx/pull/904))
+
+### Changed
+
+* Make `get --eval` posix safe ([#904](https://github.com/dotenvx/dotenvx/pull/904))
 
 ## [2.12.0](https://github.com/dotenvx/dotenvx/compare/v2.11.3...v2.12.0) (2026-07-16)
 

@@ -20,6 +20,7 @@ const setTransform = require('./transforms/set')
 const buildEnvs = require('./helpers/buildEnvs')
 const buildConfigEnvs = require('./helpers/buildConfigEnvs')
 const { determine } = require('./helpers/envResolution')
+const escape = require('./helpers/escape')
 const fsx = require('./helpers/fsx')
 const decryptKeyValue = require('./helpers/cryptography/decryptKeyValue')
 const Errors = require('./helpers/errors')
@@ -358,10 +359,11 @@ const get = async function (key, options = {}) {
       return single
     }
   } else {
-    if (options.format === 'eval') {
+    if (options.format === 'eval' || options.format === 'eval-export') {
+      const prefix = options.format === 'eval-export' ? 'export ' : ''
       let inline = ''
       for (const [key, value] of Object.entries(parsed)) {
-        inline += `${key}=${escape(value)}\n`
+        inline += `${prefix}${key}=${escape(value)}\n`
       }
       inline = inline.trim()
 
