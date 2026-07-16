@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.11.3...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.12.0...main)
+
+## [2.12.0](https://github.com/dotenvx/dotenvx/compare/v2.11.3...v2.12.0) (2026-07-16)
+
+### Changed
+
+* Small Breaking: Single quoted `'Let\'s go'` now correctly escapes to `Let's go` ([#903](https://github.com/dotenvx/dotenvx/pull/903))
 
 ## [2.11.3](https://github.com/dotenvx/dotenvx/compare/v2.11.2...v2.11.3) (2026-07-16)
 
