@@ -5,7 +5,16 @@
   "author": "@motdotla",
   "keywords": [
     "dotenv",
-    "env"
+    "env",
+    ".env",
+    "environment",
+    "variables",
+    "config",
+    "settings",
+    "env vars",
+    "environment variables",
+    "secret-management",
+    "secrets"
   ],
   "homepage": "https://github.com/dotenvx/dotenvx",
   "repository": {
