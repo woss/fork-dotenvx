@@ -38,7 +38,7 @@ t.test('resolves supported bw:// values asynchronously', async ct => {
   ct.same(result, { errors: [], unresolved: [] })
 })
 
-t.test('unlocks once and keeps the session in memory for an interactive request', async ct => {
+t.test('reuses the session within one env row and unlocks again for the next row', async ct => {
   delete process.env.BW_SESSION
   const stdinTTY = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY')
   const stderrTTY = Object.getOwnPropertyDescriptor(process.stderr, 'isTTY')
@@ -72,19 +72,25 @@ t.test('unlocks once and keeps the session in memory for an interactive request'
 
   try {
     const result = await resolveBitwardenPassword(parsed)
+    const nextParsed = { USERNAME: `bw://${ITEM_ID}/username` }
+    const nextResult = await resolveBitwardenPassword(nextParsed)
 
     ct.same(parsed, { PASSWORD: 'password-value', URI: 'uri-value' })
+    ct.same(nextParsed, { USERNAME: 'username-value' })
     ct.same(calls.map(call => call[1]), [
       ['unlock', '--passwordenv', 'DOTENVX_BITWARDEN_PASSWORD', '--raw'],
       ['get', 'password', ITEM_ID],
-      ['get', 'uri', ITEM_ID]
+      ['get', 'uri', ITEM_ID],
+      ['unlock', '--passwordenv', 'DOTENVX_BITWARDEN_PASSWORD', '--raw'],
+      ['get', 'username', ITEM_ID]
     ])
-    ct.same(spinnerCalls, ['pause', 'resume'])
+    ct.same(spinnerCalls, ['pause', 'resume', 'pause', 'resume'])
     ct.equal(calls[0][2].env.DOTENVX_BITWARDEN_PASSWORD, 'master-password')
     ct.equal(calls[1][2].env.BW_SESSION, 'request-session')
     ct.equal(calls[2][2].env.BW_SESSION, 'request-session')
     ct.notOk(process.env.BW_SESSION, 'does not export the session globally')
     ct.same(result, { errors: [], unresolved: [] })
+    ct.same(nextResult, { errors: [], unresolved: [] })
   } finally {
     if (stdinTTY) Object.defineProperty(process.stdin, 'isTTY', stdinTTY)
     else delete process.stdin.isTTY

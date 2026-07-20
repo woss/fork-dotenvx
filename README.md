@@ -982,38 +982,6 @@ $ dotenvx run --no-1password -- node index.js
 The same flag is available for `dotenvx get` and `dotenvx validate`.
 
 </details>
-<details><summary>`run` - Bitwarden secret references</summary><br>
-
-Resolve secrets from Bitwarden Password Manager directly from your `.env` file using dotenvx's `bw://` reference format.
-
-```ini
-# .env
-USERNAME=bw://7ac9cae8-5067-4faf-b6ab-acfd00e2c328/username
-PASSWORD=bw://7ac9cae8-5067-4faf-b6ab-acfd00e2c328/password
-LOGIN_URI=bw://7ac9cae8-5067-4faf-b6ab-acfd00e2c328/uri
-```
-
-Install the [Bitwarden Password Manager CLI](https://bitwarden.com/help/cli/). When run interactively, dotenvx asks Bitwarden to unlock and keeps the returned session in memory for the current command. Dotenvx supports exact item UUIDs and the `username`, `password`, and `uri` fields.
-
-```sh
-$ export BW_SESSION="$(bw unlock --raw)"
-```
-
-For non-interactive commands and programmatic API calls, unlock Bitwarden ahead of time by exporting `BW_SESSION`.
-
-```sh
-$ dotenvx run -- node index.js
-```
-
-Use `--no-bitwarden` to leave `bw://` values unresolved.
-
-```sh
-$ dotenvx run --no-bitwarden -- node index.js
-```
-
-The same flag is available for `dotenvx get` and `dotenvx validate`. The `bw://` format is defined by dotenvx; Bitwarden does not provide a native secret-reference URI format.
-
-</details>
 <details><summary>`run` - Variable Expansion</summary><br>
 
 Reference and expand variables already on your machine for use in your .env file.
@@ -3306,30 +3274,6 @@ require('@dotenvx/dotenvx').config({no1Password: true})
 ```
 
 </details>
-<details><summary>`config(noBitwarden:)` - noBitwarden</summary><br>
-
-By default, `config()` automatically resolves dotenvx `bw://` references through the installed Bitwarden Password Manager CLI.
-
-```ini
-# .env
-PASSWORD=bw://7ac9cae8-5067-4faf-b6ab-acfd00e2c328/password
-```
-
-```js
-// index.js
-require('@dotenvx/dotenvx').config()
-
-console.log(process.env.PASSWORD)
-```
-
-Set `noBitwarden` to leave `bw://` values unresolved and avoid calling `bw`.
-
-```js
-// index.js
-require('@dotenvx/dotenvx').config({noBitwarden: true})
-```
-
-</details>
 <details><summary>`parse(src)`</summary><br>
 
 Parse a `.env` string directly in node.js code.
@@ -3489,7 +3433,6 @@ Set `mask: 0` to fully mask values.
   * [GitHub Actions](https://dotenvx.com/docs/cis/github-actions)
 * [Password Managers](https://dotenvx.com/docs#password-managers)
   * [1Password](https://dotenvx.com/docs/guides/1password)
-  * [Bitwarden](https://dotenvx.com/docs/guides/bitwarden)
 * [Background Jobs](https://dotenvx.com/docs#background-jobs)
   * [Trigger.dev](https://dotenvx.com/docs/background-jobs/triggerdotdev)
 * [Package Managers](https://dotenvx.com/docs#package-managers)
