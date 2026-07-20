@@ -258,6 +258,17 @@ program.command('update')
     return require('./actions/update').apply(this, args)
   })
 
+// dotenvx curl
+program.command('curl')
+  .description('make an authenticated dotenvx API request')
+  .argument('<url>', 'dotenvx API URL')
+  .option('-X, --request <method>', 'HTTP request method')
+  .option('--data <json>', 'JSON request body')
+  .option('--token <token>', 'set Armor ⛨ token')
+  .action(function (...args) {
+    return require('./actions/curl').apply(this, args)
+  })
+
 // dotenvx login (compatibility alias for dotenvx armor login)
 program.command('login', { hidden: true })
   .description('log in to move keys off-device, share with your team, and audit access')
