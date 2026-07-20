@@ -3412,53 +3412,26 @@ Set `mask: 0` to fully mask values.
 
 &nbsp;
 
-## Guides
+## Quickstarts
 
-> Go deeper with `dotenvx` – detailed framework and platform guides.
+> Encrypt and run secrets in your language, framework, or tool.
 >
 
-* [Languages](https://dotenvx.com/docs#languages)
-  * [Node.js](https://dotenvx.com/docs/languages/nodejs)
-  * [Python](https://dotenvx.com/docs/languages/python)
-  * [Ruby](https://dotenvx.com/docs/languages/ruby)
-  * [Go](https://dotenvx.com/docs/languages/go)
-  * [PHP](https://dotenvx.com/docs/languages/php)
-  * [Rust](https://dotenvx.com/docs/languages/rust)
-* [Frameworks](https://dotenvx.com/docs#frameworks)
-  * [Astro](https://dotenvx.com/docs/secrets-in-astro)
-  * [Expo](https://dotenvx.com/docs/secrets-in-expo)
-  * [Express](https://dotenvx.com/docs/frameworks/express)
-  * [Next](https://dotenvx.com/docs/frameworks/next)
-  * [Remix](https://dotenvx.com/docs/frameworks/remix)
-  * [Flask](https://dotenvx.com/docs/frameworks/flask)
-  * [Sinatra](https://dotenvx.com/docs/frameworks/sinatra)
-  * [Rocket](https://dotenvx.com/docs/frameworks/rocket)
-* [Platforms](https://dotenvx.com/docs#platforms)
-  * [Digital Ocean](https://dotenvx.com/docs/platforms/digital-ocean)
-  * [Docker](https://dotenvx.com/docs/platforms/docker)
-  * [Fly](https://dotenvx.com/docs/platforms/fly)
-  * [Heroku](https://dotenvx.com/docs/platforms/heroku)
-  * [Netlify](https://dotenvx.com/docs/platforms/netlify)
-  * [Vercel](https://dotenvx.com/docs/platforms/vercel)
-  * [Railway](https://dotenvx.com/docs/platforms/railway)
-  * [Render](https://dotenvx.com/docs/platforms/render)
-* [CI/CDs](https://dotenvx.com/docs#cis)
-  * [GitHub Actions](https://dotenvx.com/docs/cis/github-actions)
-* [Password Managers](https://dotenvx.com/docs#password-managers)
-  * [1Password](https://dotenvx.com/docs/guides/1password)
-* [Background Jobs](https://dotenvx.com/docs#background-jobs)
-  * [Trigger.dev](https://dotenvx.com/docs/background-jobs/triggerdotdev)
-* [Package Managers](https://dotenvx.com/docs#package-managers)
-  * [NPM](https://dotenvx.com/docs/package-managers/npm)
-  * [PNPM](https://dotenvx.com/docs/package-managers/pnpm)
-* [Process Managers](https://dotenvx.com/docs#process-managers)
-  * [PM2](https://dotenvx.com/docs/process-managers/pm2)
-* [Monorepos](https://dotenvx.com/docs#monorepos)
-  * [Nx](https://dotenvx.com/docs/monorepos/nx)
-  * [Turborepo](https://dotenvx.com/docs/monorepos/turborepo)
-* [Concepts](https://dotenvx.com/docs#concepts)
-  * [.env](https://dotenvx.com/docs/env-file)
-  * [.env.keys](https://dotenvx.com/docs/env-keys-file)
+* [Claude](https://dotenvx.com/docs/secrets-in-claude)
+* [Codex](https://dotenvx.com/docs/secrets-in-codex)
+* [Node.js](https://dotenvx.com/docs/secrets-in-nodejs)
+* [Next.js](https://dotenvx.com/docs/secrets-in-nextjs)
+* [Express](https://dotenvx.com/docs/secrets-in-express)
+* [Astro](https://dotenvx.com/docs/secrets-in-astro)
+* [Expo](https://dotenvx.com/docs/secrets-in-expo)
+* [Python](https://dotenvx.com/docs/secrets-in-python)
+* [Ruby](https://dotenvx.com/docs/secrets-in-ruby)
+* [Go](https://dotenvx.com/docs/secrets-in-go)
+* [PHP](https://dotenvx.com/docs/secrets-in-php)
+* [Rust](https://dotenvx.com/docs/secrets-in-rust)
+* [1Password](https://dotenvx.com/docs/secrets-in-1password)
+
+[Browse all quickstarts](https://dotenvx.com/docs)
 
 &nbsp;
 
