@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.14.0...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.15.0...main)
+
+## [2.15.0](https://github.com/dotenvx/dotenvx/compare/v2.14.0...v2.15.0) (2026-07-20)
+
+### Added
+
+* Add support for 1Password `op://` secrets in your .env files. ([#908](https://github.com/dotenvx/dotenvx/pull/908))
 
 ## [2.14.0](https://github.com/dotenvx/dotenvx/compare/v2.13.0...v2.14.0) (2026-07-16)
 
