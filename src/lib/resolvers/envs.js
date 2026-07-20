@@ -111,7 +111,7 @@ async function injectEnv ({ env, overload, processEnv, envKeysFilepath, provider
     }
 
     if (!noBitwarden) {
-      const passwordResult = await resolveBitwardenPassword(row.injected)
+      const passwordResult = await resolveBitwardenPassword(row.injected, { onStatus })
       row.errors.push(...passwordResult.errors)
       for (const key of passwordResult.unresolved) delete row.parsed[key]
 
@@ -222,7 +222,7 @@ async function injectEnvFile ({ env, overload, processEnv, envKeysFilepath, prov
     }
 
     if (!noBitwarden) {
-      const passwordResult = await resolveBitwardenPassword(row.injected)
+      const passwordResult = await resolveBitwardenPassword(row.injected, { onStatus })
       row.errors.push(...passwordResult.errors)
       for (const key of passwordResult.unresolved) delete row.parsed[key]
 

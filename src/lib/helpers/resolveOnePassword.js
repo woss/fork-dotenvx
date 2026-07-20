@@ -1,5 +1,6 @@
 const { execFile, execFileSync } = require('child_process')
 const Errors = require('./errors')
+const createElapsedStatus = require('./createElapsedStatus')
 
 function execFileAsync (command, args, options) {
   return new Promise((resolve, reject) => {
@@ -25,22 +26,30 @@ function resolutionError (key, error) {
 async function resolveOnePassword (parsed, options = {}) {
   const errors = []
   const unresolved = []
+  const hasSecretReferences = Object.values(parsed).some(isSecretReference)
+  const stopStatus = hasSecretReferences
+    ? createElapsedStatus(options.onStatus, 'awaiting 1password')
+    : null
 
-  for (const [key, value] of Object.entries(parsed)) {
-    if (!isSecretReference(value)) continue
+  try {
+    for (const [key, value] of Object.entries(parsed)) {
+      if (!isSecretReference(value)) continue
 
-    try {
-      if (options.onStatus) options.onStatus('awaiting 1password')
-      const stdout = await execFileAsync('op', ['read', value, '--no-newline'], {
-        encoding: 'utf8',
-        windowsHide: true
-      })
-      parsed[key] = stdout
-    } catch (error) {
-      errors.push(resolutionError(key, error))
-      unresolved.push(key)
-      delete parsed[key]
-    } finally {
+      try {
+        const stdout = await execFileAsync('op', ['read', value, '--no-newline'], {
+          encoding: 'utf8',
+          windowsHide: true
+        })
+        parsed[key] = stdout
+      } catch (error) {
+        errors.push(resolutionError(key, error))
+        unresolved.push(key)
+        delete parsed[key]
+      }
+    }
+  } finally {
+    if (stopStatus) {
+      stopStatus()
       if (options.onStatus) options.onStatus('injecting')
     }
   }
