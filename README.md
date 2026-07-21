@@ -3380,6 +3380,21 @@ require('@dotenvx/dotenvx').config({noBitwarden: true})
 ```
 
 </details>
+<details><summary>Environment Variable Config Overrides</summary><br>
+
+```ini
+BW_SESSION=
+DOTENV_CONFIG_CONVENTION=
+DOTENV_CONFIG_QUIET=
+DOTENV_ENV=
+DOTENV_PRIVATE_KEY=
+DOTENV_PRIVATE_KEY_<ENV>=
+DOTENVX_CONFIG=
+DOTENVX_NO_ARMOR=
+NODE_ENV=
+```
+
+</details>
 <details><summary>`parse(src)`</summary><br>
 
 Parse a `.env` string directly in node.js code.
