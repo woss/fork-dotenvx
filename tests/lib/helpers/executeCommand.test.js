@@ -80,7 +80,7 @@ t.test('executeCommand - exitCode 1', async ct => {
   ct.ok(processExitStub.called, 'process.exit called')
   ct.ok(execaStub.called, 'execa called')
   ct.ok(loggerDebugStub.calledWith('received exitCode 1'), 'logger debug')
-  ct.ok(loggerErrorStub.calledWith('[COMMAND_EXITED_WITH_CODE] Command exited with exit code 1'), 'logger error')
+  ct.ok(loggerErrorStub.notCalled, 'does not duplicate the command failure')
 
   ct.end()
 })
@@ -130,7 +130,7 @@ t.test('executeCommand - command failed error', async ct => {
   await executeCommand(['node', 'index.js'], { HELLO: 'World' })
 
   ct.ok(processExitStub.calledWith(1), 'process.exit should be called')
-  ct.ok(loggerErrorStub.calledWith('Command failed with exit code 1'), 'logger error')
+  ct.ok(loggerErrorStub.notCalled, 'does not duplicate the command failure')
 
   ct.end()
 })
