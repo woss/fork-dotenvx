@@ -167,7 +167,7 @@ Hello World
 see [1Password guide](https://dotenvx.com/docs/secrets-in-1password)
 
 </details>
-<details><summary>Bitwarden 🔑</summary><br>
+<details><summary>Bitwarden 🛡️</summary><br>
 
 Run with secrets resolved directly from Bitwarden Password Manager.
 
