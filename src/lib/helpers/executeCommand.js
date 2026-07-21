@@ -174,14 +174,18 @@ async function executeCommand (commandArgs, env, sensitiveValues = []) {
 
     if (exitCode !== 0) {
       logger.debug(`received exitCode ${exitCode}`)
-      throw new Errors({ exitCode }).commandExitedWithCode()
+      const error = new Errors({ exitCode }).commandExitedWithCode()
+      error.exitCode = exitCode
+      throw error
     }
   } catch (error) {
+    const commandExited = Number.isInteger(error.exitCode) && (error.code === 'COMMAND_EXITED_WITH_CODE' || error.command)
+
     // no color on these errors as they can be standard errors for things like jest exiting with exitCode 1 for a single failed test.
     if (!['SIGINT', 'SIGTERM'].includes(signalSent || error.signal)) {
       if (error.code === 'ENOENT') {
         logger.error(`Unknown command: ${error.command}`)
-      } else {
+      } else if (!commandExited) {
         logger.error(redactOutput(error.message, sensitiveValues))
       }
     }
