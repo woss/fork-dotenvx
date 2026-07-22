@@ -3039,6 +3039,8 @@ X.X.X
 
 </details>
 
+&nbsp;
+
 ### Library 📦
 
 Use dotenvx directly in code.
@@ -3488,6 +3490,8 @@ abcdef******
 Set `mask: 0` to fully mask values.
 
 </details>
+
+&nbsp;
 
 ### Settings ⚙️
 
