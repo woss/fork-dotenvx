@@ -2602,6 +2602,27 @@ $ dotenvx validate -f .env.production -fk .env.keys
 ```
 
 </details>
+<details><summary>`validate --ignore`</summary><br>
+
+Ignore specific validation error codes.
+
+```sh
+$ dotenvx validate --ignore=MISSING_ENV_EXAMPLE
+```
+
+Ignore multiple error codes by separating them with spaces.
+
+```sh
+$ dotenvx validate --ignore=MISSING_ENV_FILE MISSING_ENV_EXAMPLE
+```
+
+You can also set `DOTENV_CONFIG_IGNORE`. Its value is a comma-separated list.
+
+```sh
+$ DOTENV_CONFIG_IGNORE=MISSING_ENV_FILE,OTHER dotenvx validate
+```
+
+</details>
 <details><summary>`genexample`</summary><br>
 
 In one command, generate a `.env.example` file from your current `.env` file contents.
