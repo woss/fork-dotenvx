@@ -220,6 +220,58 @@ t.test('#run (.env files in subfolders throw error in precommit hook)', ct => {
   ct.end()
 })
 
+t.test('#run (.env.example in a subfolder is exempt and does not throw)', ct => {
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['app/.env.example'])
+  childProcess.execSync.returns(Buffer.from('app/.env.example'))
+
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
+  readFileXStub.callsFake((filePath) => {
+    if (filePath === 'app/.env.example') {
+      return 'FOOBAR="baz"'
+    }
+    return ''
+  })
+
+  const result = new Precommit().run()
+
+  ct.same(result.successMessage, '▣ encrypted/gitignored (1)')
+  ct.same(result.warnings, [])
+
+  ct.end()
+})
+
+t.test('#run (.env.x in a subfolder is exempt and does not throw)', ct => {
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['app/.env.x'])
+  childProcess.execSync.returns(Buffer.from('app/.env.x'))
+
+  const readFileXStub = sinon.stub(fsx, 'readFileXSync')
+  readFileXStub.callsFake((filePath) => {
+    if (filePath === 'app/.env.x') {
+      return 'FOOBAR="baz"'
+    }
+    return ''
+  })
+
+  const result = new Precommit().run()
+
+  ct.same(result.successMessage, '▣ encrypted/gitignored (1)')
+  ct.same(result.warnings, [])
+
+  ct.end()
+})
+
+t.test('#run (gitignore is ignoring a subfolder .env.example file and shouldn\'t)', ct => {
+  sinon.stub(fsx, 'readFileXSync').returns('.env*')
+  sinon.stub(Precommit.prototype, '_filepaths').returns(['app/.env.example'])
+  childProcess.execSync.returns(Buffer.from('app/.env.example'))
+
+  const { warnings } = new Precommit().run()
+
+  ct.same(warnings[0].message, 'app/.env.example ignored (should not be)')
+
+  ct.end()
+})
+
 t.test('_installPrecommitHook calls InstallPrecommitHook.run', ct => {
   const stub = sinon.stub(InstallPrecommitHook.prototype, 'run').returns({})
 
