@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.17.2...main)
+[Unreleased](https://github.com/dotenvx/dotenvx/compare/v2.17.3...main)
+
+## [2.17.3](https://github.com/dotenvx/dotenvx/compare/v2.17.2...v2.17.3) (2026-07-23)
+
+### Changed
+
+* Exempt `.env.example` in subdirectories from precommit ([#920](https://github.com/dotenvx/dotenvx/pull/920))
 
 ## [2.17.2](https://github.com/dotenvx/dotenvx/compare/v2.17.1...v2.17.2) (2026-07-22)
 
